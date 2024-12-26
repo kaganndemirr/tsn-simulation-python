@@ -8,7 +8,10 @@ IPG = 12
 
 TT_PCP = 7
 
-PCP_TO_TYPE = {
+PCP_TO_APP_TYPE = {
     6: 'CLASS_A',
     7: 'TT',
 }
+
+SWITCH = "switch"
+END_SYSTEM = "endsystem"

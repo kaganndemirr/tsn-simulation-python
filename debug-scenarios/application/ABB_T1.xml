@@ -54,4 +54,17 @@
         <CMI>125</CMI>
         <PCP>7</PCP>
     </Application>
+
+    <Application name="APP_6">
+        <PCP>7</PCP>
+        <Source name="ES400"/>
+        <GCL offset="10.4" duration="35.0" frequency="2"/>
+        <Target name="ES417"/>
+        <Path>
+            <Switch name="B300"/>
+            <Switch name="B319"/>
+            <Switch name="B318"/>
+        </Path>
+    </Application>
+
 </Applications>
