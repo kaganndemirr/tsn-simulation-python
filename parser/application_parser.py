@@ -21,6 +21,7 @@ def parse(app_file, rate, graph):
         pcp = int(app.find('PCP').text)
         frame_size_byte = int(app.find('FrameSize').text)
         number_of_frames = int(app.find('NumberOfFrames').text)
+        message_size_byte = frame_size_byte * number_of_frames
 
         if pcp < constants.TT_PCP:
             cmi = float(app.find('CMI').text)
@@ -43,14 +44,10 @@ def parse(app_file, rate, graph):
 
                 gcl_object = GCL(gcl_offset, gcl_duration, gcl_frequency, hyper_period)
 
-            explicit_path_raw = create_explicit_path_raw(source,
-                                                                           target.find('Path').findall('Switch'),
-                                                                           target_name)
+                explicit_path_raw = create_explicit_path_raw(source, target.find('Path').findall('Switch'), target)
 
             explicit_path = convert_to_graph_path(explicit_path_raw)
             ApplicationParser.set_gcl_to_edge(gcl_object, explicit_path, graph)
-
-            message_size_mbps = ApplicationParser.compute_mbps(gcl_duration, number_of_frames, hyper_period, rate)
 
             application_list.append(
                 TTApplication(name, source, target_name, frame_size, number_of_frames, pcp, interval, deadline,
