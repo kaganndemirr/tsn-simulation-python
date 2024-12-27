@@ -15,3 +15,5 @@ PCP_TO_APP_TYPE = {
 
 SWITCH = "switch"
 END_SYSTEM = "endsystem"
+
+TSNCF = "tsncf"

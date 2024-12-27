@@ -1,5 +1,5 @@
 from phy.shortest_path.dijkstra.dijkstra_path import DijkstraPath
-from evaluator.avb_latency_math_kaganndemirr_version import evaluate as avb_latency_math_kaganndemirr
+from evaluator.avb_lm_tsnrot_version import evaluate as avb_latency_math_kaganndemirr
 from solver.solution import Solution
 
 

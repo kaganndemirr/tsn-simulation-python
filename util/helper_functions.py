@@ -22,6 +22,7 @@ def convert_graph_to_nx_graph(graph):
 
     for edge in graph.get_edges():
         g.add_edge(edge.get_source().get_name(), edge.get_target().get_name())
+        g[edge.get_source().get_name()][edge.get_target().get_name()]['weight'] = edge.get_weight()
 
     return g
 

@@ -1,5 +1,5 @@
 class Application:
-    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target):
+    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path):
         self.name = name
         self.pcp = pcp
         self.app_type = app_type
@@ -11,6 +11,7 @@ class Application:
         self.deadline = deadline
         self.source = source
         self.target = target
+        self.explicit_path = explicit_path
 
 
     def get_name(self):
@@ -46,6 +47,9 @@ class Application:
     def get_target(self):
         return self.target
 
+    def get_explicit_path(self):
+        return self.explicit_path
+
     def __repr__(self):
         return f"Name: {self.name} PCP: {self.pcp} App Type: {self.app_type} Frame Size(B): {self.frame_size_byte} #Frames: {self.number_of_frames} Message Size (B): {self.message_size_byte} Message Size (mbps): {self.message_size_mbps} CMI(us): {self.cmi} Deadline(us): {self.deadline} Source: {self.source.get_name()} -> Target: {self.target.get_name()}"
 
@@ -55,10 +59,10 @@ class Application:
 
 class SRTApplication(Application):
 
-    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target):
-        super().__init__(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target)
+    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path):
+        super().__init__(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path)
 
 
 class TTApplication(Application):
-    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target):
-        super().__init__(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target)
+    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path):
+        super().__init__(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path)

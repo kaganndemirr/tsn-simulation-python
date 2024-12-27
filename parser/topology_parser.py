@@ -5,25 +5,58 @@ from util import constants
 from architecture.graph import Graph
 from architecture.node import Switch, EndSystem
 
-def parse(net_file, rate, idle_slope):
+def tsncf_topology_parser(net_file, rate, idle_slope):
 
     graph = Graph()
 
     tree = Et.parse(net_file)
     root = tree.getroot()
 
-    for node in root.findall('node'):
-        node_name = node.get('name')
-        node_type = node.get('type')
-        if node_type == constants.SWITCH:
-            graph.add_node(Switch(node_name))
-        elif node_type == constants.END_SYSTEM:
-            graph.add_node(EndSystem(node_name))
+    namespace = {'graphml': 'http://graphml.graphdrawing.org/xmlns'}
 
-    for edge in root.findall('edge'):
-        source = edge.get('source')
-        target = edge.get('target')
-        weight = edge.get('weight')
-        graph.add_edge(source, target, rate, idle_slope, weight)
+    for node in root.findall('.//graphml:node', namespace):
+        node_name = node.get('id')
+        data_element = node.find('graphml:data', namespace)
+        if data_element is not None:
+            data_value = data_element.text
+            if data_value == constants.SWITCH:
+                graph.add_node(Switch(node_name))
+            elif data_value == constants.END_SYSTEM:
+                graph.add_node(EndSystem(node_name))
+
+    for edge in root.findall('.//graphml:edge', namespace):
+        source_element = edge.attrib['source']
+        target_element = edge.attrib['target']
+        graph.add_edge(source_element, target_element, rate, idle_slope,)
+
+    return graph
+
+
+def tsnrot_topology_parser(net_file, idle_slope):
+
+    graph = Graph()
+
+    tree = Et.parse(net_file)
+    root = tree.getroot()
+
+    namespace = {'graphml': 'http://graphml.graphdrawing.org/xmlns'}
+
+    for node in root.findall('.//graphml:node', namespace):
+        node_name = node.get('id')
+        data_element = node.find('graphml:data', namespace)
+        if data_element is not None:
+            data_value = data_element.text
+            if data_value == constants.SWITCH:
+                graph.add_node(Switch(node_name))
+            elif data_value == constants.END_SYSTEM:
+                graph.add_node(EndSystem(node_name))
+
+    # TODO: Not Completed
+    for edge in root.findall('.//graphml:edge', namespace):
+        source_element = edge.attrib['source']
+        target_element = edge.attrib['target']
+        data_element = edge.findall('graphml:data', namespace)
+        if data_element is not None:
+            graph.add_edge(source_element, target_element, 0, idle_slope)
 
     return graph
