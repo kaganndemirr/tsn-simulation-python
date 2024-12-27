@@ -7,6 +7,9 @@ SFD = 8
 IPG = 12
 
 TT_PCP = 7
+CLASS_A_PCP = 6
+
+TSNCF_HYPERPERIOD = 500
 
 PCP_TO_APP_TYPE = {
     6: 'CLASS_A',

@@ -52,7 +52,7 @@ def tsncf_application_parser(app_file, rate, graph):
 
     for avb_app in root.findall('AVBApplication'):
         name = avb_app.get('name')
-        pcp = 6
+        pcp = constants.CLASS_A_PCP
         app_type = constants.PCP_TO_APP_TYPE.get(pcp)
         frame_size_byte = int(avb_app.find('PayloadSize').text)
         number_of_frames = int(avb_app.find('NoOfFrames').text)
@@ -62,14 +62,17 @@ def tsncf_application_parser(app_file, rate, graph):
         deadline = int(avb_app.find('Deadline').text)
         source = EndSystem(avb_app.find('Source').get('name'))
         target_list = [dest.attrib.get('name') for dest in avb_app.find("Destinations").findall("Dest")]
-        if destinations is not None:
-            destinations = [dest.find('Dest').get('name') for dest in app.find("Destinations")]
-            explicit_path_switch_list = path_location.findall('Switch')
-            explicit_path_raw = create_explicit_path_raw(source, explicit_path_switch_list, target)
-            explicit_path = convert_to_edge(explicit_path_raw, graph)
-        else:
-            explicit_path_switch_list = None
-            explicit_path = None
+        application_list.append(SRTApplication(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target_list))
+
+    for tt_app in root.findall('TTApplication'):
+        name = tt_app.get('name')
+        pcp = constants.TT_PCP
+        app_type = constants.PCP_TO_APP_TYPE.get(pcp)
+        frame_size_byte = 0
+        message_size_byte = 0
+        cmi = constants.TSNCF_HYPERPERIOD
+        source = EndSystem(tt_app.find('Source').get('name'))
+        target_list = [dest.attrib.get('name') for dest in tt_app.find("Destinations").findall("Dest")]
 
         if pcp < constants.TT_PCP:
             frame_size_byte = int(app.find('FrameSize').text)

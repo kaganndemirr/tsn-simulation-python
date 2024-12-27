@@ -1,5 +1,5 @@
 class Application:
-    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path):
+    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path = None):
         self.name = name
         self.pcp = pcp
         self.app_type = app_type
@@ -51,7 +51,7 @@ class Application:
         return self.explicit_path
 
     def __repr__(self):
-        return f"Name: {self.name} PCP: {self.pcp} App Type: {self.app_type} Frame Size(B): {self.frame_size_byte} #Frames: {self.number_of_frames} Message Size (B): {self.message_size_byte} Message Size (mbps): {self.message_size_mbps} CMI(us): {self.cmi} Deadline(us): {self.deadline} Source: {self.source.get_name()} -> Target: {self.target.get_name()}"
+        return f"Name: {self.name} PCP: {self.pcp} App Type: {self.app_type} Frame Size(B): {self.frame_size_byte} #Frames: {self.number_of_frames} Message Size (B): {self.message_size_byte} Message Size (mbps): {self.message_size_mbps} CMI(us): {self.cmi} Deadline(us): {self.deadline} Source: {self.source.get_name()} -> Target: {self.target}"
 
     def __eq__(self, other):
         return self.name == other.name
@@ -59,10 +59,10 @@ class Application:
 
 class SRTApplication(Application):
 
-    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path):
+    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path = None):
         super().__init__(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path)
 
 
 class TTApplication(Application):
-    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path):
+    def __init__(self, name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path = None):
         super().__init__(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path)
