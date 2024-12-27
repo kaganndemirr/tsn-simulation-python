@@ -18,6 +18,7 @@ def evaluate(unicast_list, graph):
             for unicast in multicast.get_unicast_list():
                 for edge in unicast.get_path():
                     reserved_for_tt_traffic = compute_reserved_for_tt_traffic(unicast.get_application().get_cmi(), edge.get_gcl_list(), edge.get_rate())
+                    tt_allocation_dict[edge] = reserved_for_tt_traffic
 
     edge_list = list()
     for unicast in unicast_list:
@@ -28,6 +29,7 @@ def evaluate(unicast_list, graph):
     cost.add(Objective.THREE.value, len(edge_list))
 
     allocation_dict = copy.deepcopy(tt_allocation_dict)
+
     for unicast in unicast_list:
         if isinstance(unicast.get_app(), SRTApplication):
             for edge in unicast.get_path():
