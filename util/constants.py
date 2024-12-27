@@ -20,3 +20,6 @@ SWITCH = "switch"
 END_SYSTEM = "endsystem"
 
 TSNCF = "tsncf"
+
+DIRECTED = "directed"
+UNDIRECTED = "undirected"

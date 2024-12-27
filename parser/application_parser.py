@@ -7,8 +7,9 @@ from application import SRTApplication, TTApplication
 from architecture.gcl import GCL
 from architecture.node import Switch, EndSystem
 
-from util.helper_functions import convert_to_edge, compute_mbps, create_explicit_path_raw
+from util.helper_functions import compute_mbps, create_explicit_path_raw, convert_explicit_path_raw_list_to_edge
 
+# TODO: Not Completed
 def tsnrot_application_parser(app_file, graph):
     application_list = list()
 
@@ -26,7 +27,7 @@ def tsnrot_application_parser(app_file, graph):
         message_size_mbps = compute_mbps(message_size_byte, cmi)
         deadline = int(app.find('Deadline').text)
         source = EndSystem(app.find('Source').get('name'))
-        target = EndSystem(app.find('Target').get('name'))
+        target_list = EndSystem(app.find('Target').get('name'))
         path_location = app.find('Path')
         if path_location is not None:
             explicit_path_switch_list = path_location.findall('Switch')
@@ -60,8 +61,10 @@ def tsncf_application_parser(app_file, rate, graph):
         cmi = float(avb_app.find('Interval').text)
         message_size_mbps = compute_mbps(message_size_byte, cmi)
         deadline = int(avb_app.find('Deadline').text)
-        source = EndSystem(avb_app.find('Source').get('name'))
-        target_list = [dest.attrib.get('name') for dest in avb_app.find("Destinations").findall("Dest")]
+        source_name = avb_app.find('Source').get('name')
+        target_name_list = [dest.attrib.get('name') for dest in avb_app.find("Destinations").findall("Dest")]
+        source = EndSystem(source_name)
+        target_list = [EndSystem(target) for target in target_name_list]
         application_list.append(SRTApplication(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target_list))
 
     for tt_app in root.findall('TTApplication'):
@@ -69,56 +72,41 @@ def tsncf_application_parser(app_file, rate, graph):
         pcp = constants.TT_PCP
         app_type = constants.PCP_TO_APP_TYPE.get(pcp)
         frame_size_byte = 0
+        number_of_frames = 0
         message_size_byte = 0
+        message_size_mbps = 0
         cmi = constants.TSNCF_HYPERPERIOD
-        source = EndSystem(tt_app.find('Source').get('name'))
-        target_list = [dest.attrib.get('name') for dest in tt_app.find("Destinations").findall("Dest")]
+        deadline = 0
+        source_name = tt_app.find('Source').get('name')
+        source = EndSystem(source_name)
+        destinations_element = tt_app.find('Source/Destinations')
+        target_list = list()
+        explicit_path_raw_list = list()
+        for dest in destinations_element.findall('Dest'):
+            explicit_path_switch_list = [bridge.attrib.get('name') for bridge in dest.find('Route')]
 
-        if pcp < constants.TT_PCP:
-            frame_size_byte = int(app.find('FrameSize').text)
-            number_of_frames = int(app.find('NumberOfFrames').text)
-            message_size_byte = frame_size_byte * number_of_frames
+            dest_name = dest.get('name')
+            target_list.append(EndSystem(dest_name))
 
-            message_size_mbps = compute_mbps(message_size_byte, cmi)
-            application_list.append(SRTApplication(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path))
+            explicit_path_raw = create_explicit_path_raw(source_name, explicit_path_switch_list, dest_name)
+            explicit_path_raw_list.append(explicit_path_raw)
 
-        elif pcp == constants.TT_PCP:
-            if hyper_period is not None:
-                cmi = int(hyper_period)
+        explicit_path_list = convert_explicit_path_raw_list_to_edge(explicit_path_raw_list, graph)
 
-            else:
-                cmi_xml = app.find('CMI')
-                if cmi_xml is None:
-                    cmi = 500
-                else:
-                    cmi = int(cmi_xml.text)
+        for gcl in destinations_element.findall('GCL'):
+            offset = float(gcl.attrib.get('offset'))
+            duration = float(gcl.attrib.get('duration'))
+            frequency = int(gcl.attrib.get('frequency'))
 
+            number_of_frames = frequency
 
-            gcl = app.find('GCL')
-            if gcl is not None:
-                frame_size_byte = 0
-                gcl_offset = float(gcl.get('offset'))
-                gcl_duration = float(gcl.get('duration'))
-                gcl_frequency = int(gcl.get('frequency'))
-                gcl_object = GCL(gcl_offset, gcl_duration, gcl_frequency, hyper_period)
-                number_of_frames = gcl_frequency
-                message_size_byte = 0
-                message_size_mbps = compute_message_size_mbps(gcl_duration, number_of_frames, cmi, rate)
-                deadline = 0
+            gcl_object = GCL(offset, duration, frequency, cmi)
 
-                explicit_path_raw = create_explicit_path_raw(source, explicit_path_switch_list, target)
+            set_gcl_to_edge(gcl_object, explicit_path_list)
 
-                explicit_path = convert_to_edge(explicit_path_raw, graph)
-                set_gcl_to_edge(gcl_object, explicit_path)
+            message_size_mbps = compute_message_size_mbps(duration, number_of_frames, cmi, rate)
 
-            else:
-                frame_size_byte = int(app.find('FrameSize').text)
-                number_of_frames = int(app.find('NumberOfFrames').text)
-                message_size_byte = frame_size_byte * number_of_frames
-                deadline = int(app.find('Deadline').text)
-                message_size_mbps = compute_mbps(message_size_byte, cmi)
-
-            application_list.append(TTApplication(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target))
+        application_list.append(TTApplication(name, pcp, app_type, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target_list, explicit_path_list))
 
     return application_list
 
@@ -131,9 +119,10 @@ def compute_message_size_mbps(gcl_duration, number_of_frames, hyper_period, rate
     return message_size_mbps
 
 
-def set_gcl_to_edge(gcl, explicit_path):
-    i = 0
-    for edge in explicit_path:
-        gcl_per_edge = GCL(gcl.get_offset() + gcl.get_duration() * i, gcl.get_duration(), gcl.get_frequency(), gcl.get_hyper_period())
-        edge.add_gcl(gcl_per_edge)
-        i += 1
+def set_gcl_to_edge(gcl, explicit_path_list):
+    for explicit_path in explicit_path_list:
+        i = 0
+        for edge in explicit_path:
+            gcl_per_edge = GCL(gcl.get_offset() + gcl.get_duration() * i, gcl.get_duration(), gcl.get_frequency(), gcl.get_hyper_period())
+            edge.add_gcl(gcl_per_edge)
+            i += 1

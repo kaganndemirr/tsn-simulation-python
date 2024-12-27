@@ -22,6 +22,9 @@ class Edge:
     def get_weight(self):
         return self.weight
 
+    def get_gcl_list(self):
+        return self.gcl_list
+
     def set_weight(self, new_weight):
         self.weight = new_weight
 
@@ -32,4 +35,9 @@ class Edge:
         return f"Source: {self.source.get_name()} Target: {self.target.get_name()} Rate: {self.rate} Idle Slope: {self.idle_slope} Weight: {self.weight}"
 
     def __eq__(self, other):
-        return (self.source, self.target) == (other.source, other.target)
+        if isinstance(other, Edge):
+            return (self.source, self.target) == (other.source, other.target)
+        return False
+
+    def __hash__(self):
+        return id(self.source) + id(self.target)

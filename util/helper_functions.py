@@ -1,11 +1,23 @@
 from util import constants
 
-from architecture.node import Switch
+from architecture.node import EndSystem, Switch
 
 import networkx as nx
 
-def convert_to_edge(path_raw, graph):
-    path = list(zip(path_raw, path_raw[1:]))
+def convert_explicit_path_raw_list_to_edge(explicit_path_raw_list, graph):
+    edge_list_list = list()
+    for explicit_path_raw in explicit_path_raw_list:
+        path = list(zip(explicit_path_raw, explicit_path_raw[1:]))
+        edge_list = list()
+        for edge in path:
+            edge_list.append(graph.get_edge(edge[0], edge[1]))
+        edge_list_list.append(edge_list)
+
+    return edge_list_list
+
+
+def convert_explicit_path_raw_to_edge(explicit_path_raw, graph):
+    path = list(zip(explicit_path_raw, explicit_path_raw[1:]))
     edge_list = list()
     for edge in path:
         edge_list.append(graph.get_edge(edge[0], edge[1]))
@@ -28,16 +40,20 @@ def convert_graph_to_nx_graph(graph):
 
 def create_explicit_path_raw(source, switch_list, target):
     explicit_path_raw = list()
-    explicit_path_raw.append(source)
+    explicit_path_raw.append(EndSystem(source))
     for switch in switch_list:
-        explicit_path_raw.append(Switch(switch.get('name')))
-    explicit_path_raw.append(target)
+        explicit_path_raw.append(Switch(switch))
+    explicit_path_raw.append(EndSystem(target))
+
 
     return explicit_path_raw
 
-def create_path_raw(string_switch_list):
+def create_path_raw(string_node_list):
     path_raw = list()
-    for switch in string_switch_list:
-        path_raw.append(Switch(switch))
+    for node in string_node_list:
+        if isinstance(node, EndSystem):
+            path_raw.append(EndSystem(node))
+        elif isinstance(node, Switch):
+            path_raw.append(Switch(node))
 
     return path_raw

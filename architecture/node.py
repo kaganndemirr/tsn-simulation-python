@@ -9,7 +9,12 @@ class Node:
         return f"Name: {self.name}"
 
     def __eq__(self, other):
-        return self.name == other.name
+        if isinstance(other, Node):
+            return self.name == other.name
+        return False
+
+    def __hash__(self):
+        return id(self.name)
 
 class Switch(Node):
     def __init__(self, name):

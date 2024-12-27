@@ -14,6 +14,9 @@ def tsncf_topology_parser(net_file, rate, idle_slope):
 
     namespace = {'graphml': 'http://graphml.graphdrawing.org/xmlns'}
 
+    graph_element = root.find("graphml:graph", namespace)
+    edge_type = graph_element.attrib.get('edgedefault')
+
     for node in root.findall('.//graphml:node', namespace):
         node_name = node.get('id')
         data_element = node.find('graphml:data', namespace)
@@ -27,7 +30,11 @@ def tsncf_topology_parser(net_file, rate, idle_slope):
     for edge in root.findall('.//graphml:edge', namespace):
         source_element = edge.attrib['source']
         target_element = edge.attrib['target']
-        graph.add_edge(source_element, target_element, rate, idle_slope,)
+        graph.add_edge(source_element, target_element, rate, idle_slope)
+        if edge_type == constants.UNDIRECTED:
+            source_element = edge.attrib['target']
+            target_element = edge.attrib['source']
+            graph.add_edge(source_element, target_element, rate, idle_slope)
 
     return graph
 
