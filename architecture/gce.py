@@ -25,4 +25,4 @@ class GCE:
         return False
 
     def __hash__(self):
-        return id(self.start) + id(self.end) + id(self.hyper_period)
+        return hash(self.start) + hash(self.end) + hash(self.hyper_period)

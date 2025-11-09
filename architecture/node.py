@@ -6,7 +6,7 @@ class Node:
         return self.name
 
     def __repr__(self):
-        return f"Name: {self.name}"
+        return f"{self.name}"
 
     def __eq__(self, other):
         if isinstance(other, Node):
@@ -14,7 +14,7 @@ class Node:
         return False
 
     def __hash__(self):
-        return id(self.name)
+        return hash(self.name)
 
 class Switch(Node):
     def __init__(self, name):

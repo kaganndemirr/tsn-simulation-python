@@ -5,7 +5,7 @@ class Edge:
         self.rate = rate
         self.idle_slope = idle_slope
         self.weight = weight
-        self.gcl_list = list()
+        self.gcl = None
 
     def get_source(self):
         return self.source
@@ -22,17 +22,17 @@ class Edge:
     def get_weight(self):
         return self.weight
 
-    def get_gcl_list(self):
-        return self.gcl_list
+    def get_gcl(self):
+        return self.gcl
 
     def set_weight(self, new_weight):
         self.weight = new_weight
 
     def add_gcl(self, gcl):
-        self.gcl_list.append(gcl)
+        self.gcl = gcl
 
     def __repr__(self):
-        return f"Source: {self.source.get_name()} Target: {self.target.get_name()} Rate: {self.rate} Idle Slope: {self.idle_slope} Weight: {self.weight}"
+        return f"({self.source} : {self.target})"
 
     def __eq__(self, other):
         if isinstance(other, Edge):
@@ -40,4 +40,4 @@ class Edge:
         return False
 
     def __hash__(self):
-        return id(self.source) + id(self.target)
+        return hash(self.source) + hash(self.target)

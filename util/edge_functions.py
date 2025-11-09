@@ -1,17 +1,11 @@
 from architecture.gce import GCE
 
-
-def compute_reserved_for_tt_traffic(duration, gcl_list, rate):
-    return (compute_worst_case_interference(duration, gcl_list) / duration - 1) * rate
-
-
-def compute_worst_case_interference(duration, gcl_list):
+def compute_worst_case_interference(duration, gcl):
     interference = duration
-    if len(gcl_list) > 0:
-        gce_list = convert_gcl_to_gce_list(gcl_list)
+    if gcl is not None:
+        gce_list = convert_gcl_to_gce_list(gcl)
         merged_gce_list = merge_same_gces(gce_list)
-        final_gce_list = finalize_gces(merged_gce_list)
-        max_interference = compute_max_interference(duration, final_gce_list)
+        max_interference = compute_max_interference(duration, merged_gce_list)
         interference = duration + max_interference
 
     return interference
@@ -50,29 +44,6 @@ def merge_same_gces(gce_list):
             fixed_gce_list.append(element)
 
     return fixed_gce_list
-
-
-def finalize_gces(merged_gce_list):
-    final_gce_list = list()
-    for i in range(len(merged_gce_list)):
-        if i == 0:
-            final_gce_list.append(merged_gce_list[i])
-        else:
-            previous_gce = final_gce_list[-1]
-            current_gce = merged_gce_list[i]
-
-            previous_gce_end = previous_gce.get_end()
-            current_gce_start = current_gce.get_start()
-            current_gce_end = current_gce.get_end()
-
-            if current_gce_start < previous_gce_end:
-                current_gce_start = previous_gce_end
-                difference = current_gce_end - current_gce.get_start()
-                current_gce_end = current_gce_start + difference
-
-            final_gce_list.append(GCE(current_gce_start, current_gce_end, current_gce.get_hyper_period()))
-
-    return final_gce_list
 
 
 def get_slack(next_gce, curr_gce):

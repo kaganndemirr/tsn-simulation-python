@@ -26,4 +26,4 @@ class GCL:
         return False
 
     def __hash__(self):
-        return id(self.offset) + id(self.duration) + id(self.frequency) + id(self.hyper_period)
+        return hash(self.offset) + hash(self.duration) + hash(self.frequency) + hash(self.hyper_period)
