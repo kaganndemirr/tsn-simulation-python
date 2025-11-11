@@ -8,7 +8,7 @@ class Graph:
     def add_node(self, node):
         self.nodes.append(node)
 
-    def add_edge(self, source_name, target_name, rate, idle_slope, weight,):
+    def add_edge(self, source_name, target_name, rate, idle_slope, weight):
         source = self.get_node(source_name)
         target = self.get_node(target_name)
         if source and target:

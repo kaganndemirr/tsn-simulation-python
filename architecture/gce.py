@@ -1,8 +1,7 @@
 class GCE:
-    def __init__(self, start, end, hyper_period):
+    def __init__(self, start, end):
         self.start = start
         self.end = end
-        self.hyper_period = hyper_period
 
     def get_start(self):
         return self.start
@@ -13,16 +12,13 @@ class GCE:
     def get_duration(self):
         return self.end - self.start
 
-    def get_hyper_period(self):
-        return self.hyper_period
-
     def __repr__(self):
-        return f"[{self.start} - {self.end}, {self.hyper_period}]"
+        return f"[{self.start} - {self.end}]"
 
     def __eq__(self, other):
         if isinstance(other, GCE):
-            return self.start == other.start and self.end == other.end and self.hyper_period == other.hyper_period
+            return self.start == other.start and self.end == other.end
         return False
 
     def __hash__(self):
-        return hash(self.start) + hash(self.end) + hash(self.hyper_period)
+        return hash(self.start) + hash(self.end)

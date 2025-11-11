@@ -1,9 +1,7 @@
 import math
 import os
 
-from application import SRTApplication
 
-from util.shaper_methods import find_average_with_es, find_average_with_sw
 
 class PHYResultShaper:
     def __init__(self, phy_holder):

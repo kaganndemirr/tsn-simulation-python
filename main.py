@@ -3,33 +3,37 @@ import logging
 import os
 import re
 
+from util import constants
+
 from parser.application_parser import application_parser
 from parser.topology_parser import topology_parser
 
-from util import constants
-from util.helper_functions import create_shortest_path_info_log, found_no_solution, found_solution
+from evaluator.avb_latency_math import AVBLatencyMath
 
-from solver.shortest_path.dijkstra.dijkstra import Dijkstra
-from solver.yen.metaheuristic.grasp import GRASP
+from util.bag import Bag
+from util.log_functions import create_info, found_solution, found_no_solution
+from util.ro_functions import find_shortest_path_for_tt_applications
+
+from solver.shortest_path_solver import ShortestPathSolver
+from solver.metaheuristic.grasp import GRASP
 
 from outputs.shapers.phy_shortest_path_result_shaper import ShortestPathResultShaper
 
-from evaluator.avb_latency_math import AVBLatencyMath
 
 parser = argparse.ArgumentParser(prog='tsn_simulation')
-parser.add_argument('-network', help="Use given file as network")
-parser.add_argument('-scenario', help="Use given file as scenario")
-parser.add_argument('-cmi', help="CMI value for SRT Applications")
+parser.add_argument('-network', help="Use given file as network", type=str)
+parser.add_argument('-scenario', help="Use given file as scenario", type=str)
+parser.add_argument('-cmi', help="CMI value for SRT Applications", type=str)
 
 parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", type=int)
 parser.add_argument('-thread_number', help="Thread number (Default: Number of Processor Thread)", type=int)
 parser.add_argument('-timeout', help="Metaheuristic algorithm timeout (Type: Second) (Default: 60", type=int)
 
-parser.add_argument('-path_finder_method', help="Choose path finder method (Default = yen) (Choices: shortestPath, yen)")
-parser.add_argument('-algorithm', help="Choose algorithm for shortestPath (Default = dijkstra) (Choices: dijkstra)")
+parser.add_argument('-path_finding_method', help="Choose path finder method (Default = yen) (Choices: shortestPath, yen)", type=str)
+parser.add_argument('-algorithm', help="Choose algorithm for shortestPath (Default = dijkstra) (Choices: dijkstra)", type=str)
 
-parser.add_argument('-log', help="Log Type (Default: No Log) (Choices: info, debug)")
-parser.add_argument('-metaheuristic_name', help="Which metaheuristic runs (Default: GRASP) (Choices: GRASP, ALO)")
+parser.add_argument('-log', help="Log Type (Default: info) (Choices: info, debug)", type=str)
+parser.add_argument('-metaheuristic_name', help="Which metaheuristic runs (Default: GRASP) (Choices: GRASP, ALO)", type=str)
 
 
 args = parser.parse_args()
@@ -59,10 +63,10 @@ if args.timeout:
 else:
     timeout = 60
 
-if args.path_finder_method:
-    path_finder_method = args.path_finder_method
+if args.path_finding_method:
+    path_finding_method = args.path_finding_method
 else:
-    path_finder_method = "yen"
+    path_finding_method = "yen"
 
 if args.algorithm:
     algorithm = args.algorithm
@@ -94,10 +98,11 @@ logger.info(f"Parsing application from {os.path.basename(scenario_file)}!")
 application_list = application_parser(scenario_file, graph, cmi)
 logger.info(f"Application successfully parsed {os.path.basename(scenario_file)}!")
 
-logger.info(f"Finding explicit paths for TT Applications!")
+logger.info(f"Finding shortest paths for TT Applications!")
+tt_unicast_list = find_shortest_path_for_tt_applications(graph, application_list)
+logger.info(f"Finding shortest paths successfully for TT Applications!")
 
-
-network_name = None
+topology_name = None
 scenario_name = None
 
 pattern_topology = re.compile(r"(.+?)(?=\.graphml)")
@@ -105,21 +110,37 @@ matcher_topology = pattern_topology.search(os.path.basename(network_file))
 if matcher_topology:
     topology_name = matcher_topology.group(1)
 
-pattern_application = re.compile(r"(?<=_)(.*?)(?=\.xml)")
-matcher_application = pattern_application.search(os.path.basename(scenario_file))
-if matcher_application:
-    application_name = matcher_application.group(1)
+pattern_scenario = re.compile(r"(?<=_)(.*?)(?=\.xml)")
+matcher_scenario = pattern_scenario.search(os.path.basename(scenario_file))
+if matcher_scenario:
+    scenario_name = matcher_scenario.group(1)
 
+if path_finding_method == "shortest_path":
+    shortest_path_solver = ShortestPathSolver()
 
+    bag = Bag()
+    bag.set_path_finding_method(path_finding_method)
+    bag.set_algorithm(algorithm)
 
-if path_finder_method == "shortest_path":
+    logger.info(create_info(bag))
+
+    solution = shortest_path_solver.solve(graph, application_list, algorithm, tt_unicast_list)
+
+    if solution.get_multicast_list() is None or len(solution.get_multicast_list()) == 0 :
+        logger.info(constants.NO_SOLUTION_COULD_BE_FOUND)
+    else:
+        if solution.get_cost().get_total_cost() == float('inf'):
+            logger.info(found_no_solution(solution))
+        else:
+            logger.info(found_solution(solution))
+
     if algorithm == "dijkstra":
         dijkstra = Dijkstra()
 
         logger.info(
             create_shortest_path_info_log(routing=routing, path_finder_method=path_finder_method, algorithm=algorithm,
                                           evaluator_name=evaluator_name))
-        solution = dijkstra.solve(graph, application_list)
+
 
         solution.get_cost().write_phy_shortest_path_result_to_file(routing=routing,
                                                                    path_finder_method=path_finder_method,

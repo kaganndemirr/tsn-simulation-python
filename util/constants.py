@@ -16,3 +16,6 @@ END_SYSTEM = "endsystem"
 UNDIRECTED = "undirected"
 
 BPS = 0.000001
+
+DIJKSTRA = "dijkstra"
+YEN = "yen"

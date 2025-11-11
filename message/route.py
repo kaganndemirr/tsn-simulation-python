@@ -1,4 +1,4 @@
-from application import Application
+from application.application import Application
 
 
 class Route:
@@ -36,7 +36,7 @@ class Unicast(Route):
         return f"App: {self.application} Target: {self.target} Path: {self.path}"
 
 
-class UnicastCandidates(Route):
+class UnicastCandidate(Route):
     def __init__(self, application, target, candidate_path_list):
         super().__init__(application, target)
         self.candidate_path_list = candidate_path_list

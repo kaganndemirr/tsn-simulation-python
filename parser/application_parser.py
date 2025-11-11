@@ -1,12 +1,10 @@
 import xml.etree.ElementTree as Et
 
+from application.application import NonTTApplication, TTApplication
+from application.path import Path
+
 from util import constants
-
-from application import SRTApplication, TTApplication
-
-from architecture.node import EndSystem
-
-from util.helper_functions import compute_mbps, create_explicit_path_raw, convert_explicit_path_to_edge_list
+from util.helper_functions import compute_mbps, create_path_as_list, create_path_as_edge_list
 
 
 def application_parser(app_file, graph, cmi):
@@ -15,41 +13,60 @@ def application_parser(app_file, graph, cmi):
     tree = Et.parse(app_file)
     root = tree.getroot()
 
-    for srt_app in root.findall('SRTApplication'):
-        name = srt_app.get('name')
-        frame_size_byte = int(srt_app.find('FrameSize').text)
-        number_of_frames = int(srt_app.find('NumberOfFrames').text)
+    for non_tt_app in root.findall('NonTTApplication'):
+        name = non_tt_app.find('Name').text
+        deadline = int(non_tt_app.find('Deadline').text)
+        frame_size_byte = int(non_tt_app.find('FrameSize').text)
+        number_of_frames = int(non_tt_app.find('NumberOfFrames').text)
         message_size_byte = frame_size_byte * number_of_frames
         message_size_mbps = compute_mbps(message_size_byte, cmi)
-        deadline = int(srt_app.find('Deadline').text)
-        source = graph.get_node(srt_app.find('Source').get('name'))
-        target = graph.get_node(srt_app.find('Target').get('name'))
-        path = srt_app.find('Path')
-        explicit_path = None
-        if path is not None:
-            explicit_path_switch_list = [switch.get('name') for switch in path.findall('Switch')]
-            explicit_path_raw = create_explicit_path_raw(source, explicit_path_switch_list, target)
-            explicit_path = convert_explicit_path_to_edge_list(explicit_path_raw, graph)
+        source = graph.get_node(non_tt_app.find('Source').text)
+        target_element_list = non_tt_app.find('Targets').findall('Target')
 
-        application_list.append(SRTApplication(name, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path))
+        target_list = list()
+        path_list = list()
+        for target_element in target_element_list:
+            target_element_name = target_element.find('Name').text
+            target = graph.get_node(target_element_name)
+            target_list.append(target)
+
+            path_elememt = target_element.find('Path')
+            if path_elememt is not None:
+                switch_list = [switch.text for switch in path_elememt.findall('Switch')]
+                path_as_list = create_path_as_list(source, switch_list, target)
+                path_as_edge_list = create_path_as_edge_list(path_as_list, graph)
+                path = Path(target, path_as_edge_list)
+                path_list.append(path)
+
+
+        application_list.append(NonTTApplication(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, path_list))
 
     for tt_app in root.findall('TTApplication'):
-        name = tt_app.get('name')
+        name = tt_app.find('Name').text
+        cmi = float(tt_app.find('CMI').text)
+        deadline = int(tt_app.find('Deadline').text)
         frame_size_byte = int(tt_app.find('FrameSize').text)
         number_of_frames = int(tt_app.find('NumberOfFrames').text)
         message_size_byte = frame_size_byte * number_of_frames
-        cmi = int(tt_app.find('CMI').text)
         message_size_mbps = compute_mbps(message_size_byte, cmi)
-        deadline = int(tt_app.find('Deadline').text)
-        source = graph.get_node(tt_app.find('Source').get('name'))
-        target = graph.get_node(tt_app.find('Target').get('name'))
-        path = tt_app.find('Path')
-        explicit_path = None
-        if path is not None:
-            explicit_path_switch_list = [switch.get('name') for switch in path.findall('Switch')]
-            explicit_path_raw = create_explicit_path_raw(source, explicit_path_switch_list, target)
-            explicit_path = convert_explicit_path_to_edge_list(explicit_path_raw, graph)
+        source = graph.get_node(tt_app.find('Source').text)
+        target_element_list = tt_app.find('Targets').findall('Target')
 
-        application_list.append(TTApplication(name, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, cmi, deadline, source, target, explicit_path))
+        target_list = list()
+        path_list = list()
+        for target_element in target_element_list:
+            target_element_name = target_element.find('Name').text
+            target = graph.get_node(target_element_name)
+            target_list.append(target)
+
+            path_elememt = target_element.find('Path')
+            if path_elememt is not None:
+                switch_list = [switch.text for switch in path_elememt.findall('Switch')]
+                path_as_list = create_path_as_list(source, switch_list, target)
+                path_as_edge_list = create_path_as_edge_list(path_as_list, graph)
+                path = Path(target, path_as_edge_list)
+                path_list.append(path)
+
+        application_list.append(TTApplication(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, path_list))
 
     return application_list

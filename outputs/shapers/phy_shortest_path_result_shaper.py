@@ -1,9 +1,7 @@
 import math
 import os
 
-from application import SRTApplication
 
-from util.shaper_methods import find_average_with_es, find_average_with_sw
 
 class ShortestPathResultShaper:
     def __init__(self, routing, path_finder_method, algorithm, topology_name, application_name):

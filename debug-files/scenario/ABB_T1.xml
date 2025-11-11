@@ -1,0 +1,94 @@
+<Applications>
+    <NonTTApplication>
+        <Name>APP_1</Name>
+        <FrameSize>1500</FrameSize>
+        <NumberOfFrames>1</NumberOfFrames>
+        <Deadline>1000</Deadline>
+        <Source>ES400</Source>
+        <Targets>
+            <Target>
+                <Name>ES406</Name>
+            </Target>
+        </Targets>
+    </NonTTApplication>
+
+    <NonTTApplication>
+        <Name>APP_2</Name>
+        <FrameSize>1500</FrameSize>
+        <NumberOfFrames>1</NumberOfFrames>
+        <Deadline>2000</Deadline>
+        <Source>ES401</Source>
+        <Targets>
+            <Target>
+                <Name>ES418</Name>
+            </Target>
+        </Targets>
+    </NonTTApplication>
+
+    <NonTTApplication>
+        <Name>APP_3</Name>
+        <FrameSize>1500</FrameSize>
+        <NumberOfFrames>1</NumberOfFrames>
+        <Deadline>8000</Deadline>
+        <Source>ES402</Source>
+        <Targets>
+            <Target>
+                <Name>ES417</Name>
+            </Target>
+            <Target>
+                <Name>ES410</Name>
+            </Target>
+        </Targets>
+    </NonTTApplication>
+
+    <NonTTApplication>
+        <Name>APP_4</Name>
+        <FrameSize>1500</FrameSize>
+        <NumberOfFrames>1</NumberOfFrames>
+        <Deadline>8000</Deadline>
+        <Source>ES405</Source>
+        <Targets>
+            <Target>
+                <Name>ES402</Name>
+            </Target>
+            <Target>
+                <Name>ES418</Name>
+            </Target>
+        </Targets>
+    </NonTTApplication>
+
+    <TTApplication>
+        <Name>APP_5</Name>
+        <FrameSize>1500</FrameSize>
+        <NumberOfFrames>1</NumberOfFrames>
+        <CMI>125</CMI>
+        <Deadline>8000</Deadline>
+        <Source>ES417</Source>
+        <Targets>
+            <Target>
+                <Name>ES401</Name>
+                <Path>
+                    <Switch>B318</Switch>
+                    <Switch>B209</Switch>
+                    <Switch>B200</Switch>
+                    <Switch>B301</Switch>
+                </Path>
+            </Target>
+        </Targets>
+    </TTApplication>
+
+    <TTApplication>
+        <Name>APP_6</Name>
+        <FrameSize>875</FrameSize>
+        <NumberOfFrames>6</NumberOfFrames>
+        <CMI>65.5</CMI>
+        <Deadline>500</Deadline>
+        <Source>ES400</Source>
+        <Targets>
+            <Target>
+                <Name>ES406</Name>
+            </Target>
+        </Targets>
+    </TTApplication>
+
+</Applications>
