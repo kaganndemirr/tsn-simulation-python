@@ -1,6 +1,6 @@
 from application.application import NonTTApplication
 
-from message.route import UnicastCandidate
+from message.message import MessageCandidate
 
 from util import constants
 from util.helper_functions import convert_graph_to_nx_graph, create_path_as_node_list, create_path_as_edge_list
@@ -23,7 +23,7 @@ class YenKShortestPath:
                             shortest_path = create_path_as_edge_list(shortest_path_as_node_list, graph)
                             candidate_list.append(shortest_path)
 
-                        self.non_tt_unicast_candidate_list.append(UnicastCandidate(application, target, candidate_list))
+                        self.non_tt_unicast_candidate_list.append(MessageCandidate(application, target, candidate_list))
 
 
     def get_srt_unicast_candidate_list(self):

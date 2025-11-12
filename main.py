@@ -15,7 +15,7 @@ from util.log_functions import create_info, found_solution, found_no_solution
 from util.ro_functions import find_shortest_path_for_tt_applications
 
 from solver.shortest_path_solver import ShortestPathSolver
-from solver.metaheuristic.grasp import GRASP
+from solver.meta_heuristic_solver import GRASP
 
 from outputs.shapers.phy_shortest_path_result_shaper import ShortestPathResultShaper
 
@@ -99,7 +99,7 @@ application_list = application_parser(scenario_file, graph, cmi)
 logger.info(f"Application successfully parsed {os.path.basename(scenario_file)}!")
 
 logger.info(f"Finding shortest paths for TT Applications!")
-tt_unicast_list = find_shortest_path_for_tt_applications(graph, application_list)
+tt_message_list = find_shortest_path_for_tt_applications(graph, application_list)
 logger.info(f"Finding shortest paths successfully for TT Applications!")
 
 topology_name = None

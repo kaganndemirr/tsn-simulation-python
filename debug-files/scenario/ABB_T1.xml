@@ -91,4 +91,21 @@
         </Targets>
     </TTApplication>
 
+    <TTApplication>
+        <Name>APP_7</Name>
+        <FrameSize>5</FrameSize>
+        <NumberOfFrames>60</NumberOfFrames>
+        <CMI>65.5</CMI>
+        <Deadline>2000</Deadline>
+        <Source>ES408</Source>
+        <Targets>
+            <Target>
+                <Name>ES400</Name>
+            </Target>
+             <Target>
+                <Name>ES410</Name>
+            </Target>
+        </Targets>
+    </TTApplication>
+
 </Applications>

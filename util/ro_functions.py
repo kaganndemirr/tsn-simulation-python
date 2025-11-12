@@ -5,58 +5,58 @@ from application.path import Path
 
 from evaluator.avb_latency_math_cost import AVBLatencyMathCost
 
-from message.route import Unicast, UnicastCandidate
+from message.message import Message, MessageCandidate
 
 from util.helper_functions import convert_graph_to_nx_graph, create_path_as_node_list, create_path_as_edge_list
 from util.path_finding_functions import dijkstra_shortest_path
 
-def construct_initial_solution(non_tt_unicast_candidates_list, tt_unicast_list, evaluator):
-    initial_solution = list(tt_unicast_list)
+def construct_initial_solution(non_tt_message_candidate_list, tt_message_list, evaluator):
+    initial_solution = list(tt_message_list)
 
-    shuffled_non_tt_unicast_candidates_list = list(non_tt_unicast_candidates_list)
-    random.shuffle(shuffled_non_tt_unicast_candidates_list)
+    shuffled_non_tt_message_candidate_list = list(non_tt_message_candidate_list)
+    random.shuffle(shuffled_non_tt_message_candidate_list)
 
-    for unicast_candidate in shuffled_non_tt_unicast_candidates_list:
+    for message_candidate in shuffled_non_tt_message_candidate_list:
         current_best_cost = AVBLatencyMathCost()
-        current_best_unicast = None
+        current_best_message = None
 
-        for candidate_path in unicast_candidate.get_candidate_path_list():
-            current_unicast = Unicast(unicast_candidate.get_application(), unicast_candidate.get_target(), candidate_path)
-            initial_solution.append(current_unicast)
+        for candidate_path in message_candidate.get_candidate_path_list():
+            current_message = Message(message_candidate.get_application(), [message_candidate.get_target()], candidate_path)
+            initial_solution.append(current_message)
             cost = evaluator.evaluate(initial_solution)
             if cost.get_total_cost() < current_best_cost.get_total_cost():
                 current_best_cost = cost
-                current_best_unicast = current_unicast
-            initial_solution.remove(current_unicast)
+                current_best_message = current_message
+            initial_solution.remove(current_message)
 
-        initial_solution.append(current_best_unicast)
+        initial_solution.append(current_best_message)
 
     return initial_solution
 
 
-def grasp(initial_solution, evaluator, non_tt_unicast_candidate_list, global_best_cost):
+def grasp(initial_solution, evaluator, non_tt_message_candidate_list, global_best_cost):
     solution = list(initial_solution)
     cost = evaluator.evaluate(solution)
     best_cost = cost
 
     mapping = dict()
-    for unicast_candidate in non_tt_unicast_candidate_list:
-        mapping[unicast_candidate] = unicast_candidate
+    for message_candidate in non_tt_message_candidate_list:
+        mapping[message_candidate] = message_candidate
 
     for sample in range(len(solution) // 2):
         index = random.randint(0, len(solution) - 1)
 
-        old_unicast = solution[index]
+        old_message = solution[index]
 
-        if old_unicast in mapping.keys():
-            old_unicast_candidate = mapping[old_unicast]
+        if old_message in mapping.keys():
+            old_message_candidate = mapping[old_message]
         else:
-            old_unicast_candidate = None
+            old_message_candidate = None
 
-        if isinstance(old_unicast_candidate, UnicastCandidate):
-            for candidate_path in old_unicast_candidate.get_candidate_path_list():
-                temp_unicast = Unicast(old_unicast.get_application(), old_unicast.get_target(), candidate_path)
-                solution[index] = temp_unicast
+        if isinstance(old_message_candidate, MessageCandidate):
+            for candidate_path in old_message_candidate.get_candidate_path_list():
+                temp_message = Message(old_message.get_application(), [old_message.get_target()], candidate_path)
+                solution[index] = temp_message
                 cost = evaluator.evaluate(solution)
 
                 if cost.get_total_cost() < best_cost.get_total_cost():
@@ -66,26 +66,26 @@ def grasp(initial_solution, evaluator, non_tt_unicast_candidate_list, global_bes
                         sample -= len(solution) // 2
                     break
                 else:
-                    solution[index] = old_unicast
+                    solution[index] = old_message
 
     return solution
 
 
 def find_shortest_path_for_tt_applications(graph, application_list):
-    tt_unicast_list = list()
+    tt_message_list = list()
     for application in application_list:
         if isinstance(application, TTApplication):
             for target in application.get_target_list():
                 if len(application.get_path_list()) != 0:
                     for path in application.get_path_list():
                         if path.get_target() == target:
-                            tt_unicast_list.append(Unicast(application, target, path.get_path()))
+                            tt_message_list.append(Message(application, [target], path.get_path()))
                             break
                 else:
                     g = convert_graph_to_nx_graph(graph, application.get_source(), target)
                     shortest_path_as_string_list = dijkstra_shortest_path(g, application.get_source().get_name(), target.get_name(), weight='weight')
                     shortest_path_as_node_list = create_path_as_node_list(shortest_path_as_string_list[0], shortest_path_as_string_list[1:-1], shortest_path_as_string_list[-1])
                     shortest_path = create_path_as_edge_list(shortest_path_as_node_list, graph)
-                    tt_unicast_list.append(Unicast(application, target, shortest_path))
+                    tt_message_list.append(Message(application, [target], shortest_path))
 
-    return tt_unicast_list
+    return tt_message_list
