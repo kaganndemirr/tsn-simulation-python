@@ -1,4 +1,4 @@
-class TSNschedJson:
+class TSNschedInputJson:
     def __init__(self, tsnsched):
         self.devices = tsnsched.get_devices()
         self.flow = tsnsched.get_flows()

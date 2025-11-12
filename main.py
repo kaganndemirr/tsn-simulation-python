@@ -3,6 +3,7 @@ import logging
 import os
 import json
 
+
 from util import constants
 
 from parser.application_parser import application_parser
@@ -11,12 +12,13 @@ from parser.topology_parser import topology_parser
 from evaluator.avb_latency_math import AVBLatencyMath
 
 from tsnsched.tsnsched import TSNsched
-from tsnsched.tsnsched_json import TSNschedJson
+from tsnsched.input_json import TSNschedInputJson
 from tsnsched.run_tsnsched import run_tsnsched
+from tsnsched.output_json import parse_output_json
 
 from util.bag import Bag
-from util.helper_functions import get_topology_and_scenario_name
-from util.log_functions import create_info, found_solution, found_no_solution, create_scenario_output_path
+from util.helper_functions import get_topology_and_scenario_name, create_scenario_output_path, create_tsnsched_output_path
+from util.log_functions import create_info, found_solution, found_no_solution
 from util.ro_functions import find_shortest_path_for_tt_applications
 
 from solver.shortest_path_solver import ShortestPathSolver
@@ -118,16 +120,20 @@ if path_finding_method == "shortest_path":
 
     logger.info(f"Creating input.json for TSNsched!")
     tsnsched = TSNsched(graph, tt_message_list)
-    tsnsched_json = TSNschedJson(tsnsched)
+    tsnsched_json = TSNschedInputJson(tsnsched)
     tsnsched_dict = tsnsched_json.to_dict()
-    output_path = create_scenario_output_path(bag)
-    with open(os.path.join(output_path, "input.json"), "w", encoding="utf-8") as f:
+    scenario_output_path = create_scenario_output_path(bag)
+    tsnsched_output_path = create_tsnsched_output_path(scenario_output_path)
+    with open(os.path.join(tsnsched_output_path, "input.json"), "w", encoding="utf-8") as f:
         json.dump(tsnsched_dict, f, ensure_ascii=False, indent=2)
     logger.info(f"input.json created successfully!")
 
     logger.info(f"Running TSNsched!")
-    run_tsnsched(output_path)
+    run_tsnsched(tsnsched_output_path)
     logger.info(f"Schedule generated!")
+
+    logger.info(f"GCL deploying to Edges!")
+    parse_output_json(tsnsched_output_path, graph)
 
     logger.info(create_info(bag))
 
@@ -141,39 +147,7 @@ if path_finding_method == "shortest_path":
         else:
             logger.info(found_solution(solution))
 
-    if algorithm == "dijkstra":
-        dijkstra = Dijkstra()
-
-        logger.info(
-            create_shortest_path_info_log(routing=routing, path_finder_method=path_finder_method, algorithm=algorithm,
-                                          evaluator_name=evaluator_name))
-
-
-        solution.get_cost().write_phy_shortest_path_result_to_file(routing=routing,
-                                                                   path_finder_method=path_finder_method,
-                                                                   algorithm=algorithm, topology_name=topology_name,
-                                                                   application_name=application_name)
-
-        if solution.get_multicast_list() is None or not solution.get_multicast_list():
-            logger.info(constants.NO_SOLUTION_COULD_BE_FOUND)
-        else:
-            if solution.get_cost().get_total_cost() == float('inf'):
-                logger.info(found_no_solution(solution))
-            else:
-                logger.info(found_solution(solution))
-
-                shortest_path_result_shaper = ShortestPathResultShaper(routing=routing,
-                                                                       path_finder_method=path_finder_method,
-                                                                       algorithm=algorithm, topology_name=topology_name,
-                                                                       application_name=application_name)
-                shortest_path_result_shaper.write_solution_to_file(dijkstra.get_solution())
-                shortest_path_result_shaper.write_worst_case_delays_to_file(
-                    solution.get_cost().get_worst_case_delay_dict())
-                shortest_path_result_shaper.write_link_utilizations_to_file(dijkstra.get_solution(), graph, rate)
-                shortest_path_result_shaper.write_duration_map(dijkstra.get_duration_dict())
-
-
-elif path_finder_method == "yen":
+elif path_finding_method == "yen":
     if metaheuristic_name == "GRASP":
         grasp = GRASP(k)
 

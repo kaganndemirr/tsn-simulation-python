@@ -52,19 +52,18 @@ class TSNsched:
         switches = list()
         for node in self.graph.get_nodes():
             if isinstance(node, Switch):
-                name = node.get_name()
+                switch_name = node.get_name()
+                port_list = node.get_port_list()
                 ports = list()
-                port_id = 0
-                for neighbor in self.graph.get_node_neighbor_list(node):
-                    port_name = "eth" + str(port_id)
-                    connectsTo = neighbor.get_name()
-                    portSpeed = self.graph.get_edge(node, neighbor).get_rate()
-                    scheduleType = constants.MACRO_CYCLE
-                    port_id += 1
-                    port = Port(port_name, connectsTo, portSpeed, scheduleType)
+                for port in port_list:
+                    port_name = port.get_name()
+                    connects_to = port.get_connects_to()
+                    port_speed = self.graph.get_edge(node, self.graph.get_node(connects_to)).get_rate()
+                    schedule_type = constants.MICRO_CYCLE
+                    port = Port(port_name, connects_to, port_speed, schedule_type)
                     ports.append(port)
 
-                switch = TSNschedSwitch(name, ports)
+                switch = TSNschedSwitch(switch_name, ports)
                 switches.append(switch)
 
         return switches

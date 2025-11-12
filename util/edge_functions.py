@@ -1,4 +1,4 @@
-from architecture.gce import GCE
+from architecture.gcl import GCL
 
 def compute_worst_case_interference(duration, gcl):
     interference = duration

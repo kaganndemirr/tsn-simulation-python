@@ -61,8 +61,8 @@
         <Name>APP_5</Name>
         <FrameSize>100</FrameSize>
         <NumberOfFrames>1</NumberOfFrames>
-        <CMI>125</CMI>
-        <Deadline>8000</Deadline>
+        <CMI>500</CMI>
+        <Deadline>16000</Deadline>
         <Source>ES417</Source>
         <Targets>
             <Target>
@@ -81,8 +81,8 @@
         <Name>APP_6</Name>
         <FrameSize>30</FrameSize>
         <NumberOfFrames>3</NumberOfFrames>
-        <CMI>65.5</CMI>
-        <Deadline>500</Deadline>
+        <CMI>6000</CMI>
+        <Deadline>6000</Deadline>
         <Source>ES400</Source>
         <Targets>
             <Target>
@@ -95,25 +95,36 @@
         <Name>APP_7</Name>
         <FrameSize>5</FrameSize>
         <NumberOfFrames>10</NumberOfFrames>
-        <CMI>65.5</CMI>
-        <Deadline>2000</Deadline>
+        <CMI>4000</CMI>
+        <Deadline>4000</Deadline>
         <Source>ES408</Source>
         <Targets>
             <Target>
                 <Name>ES400</Name>
-            </Target>
-             <Target>
-                <Name>ES410</Name>
             </Target>
         </Targets>
     </TTApplication>
 
     <TTApplication>
         <Name>APP_8</Name>
+        <FrameSize>5</FrameSize>
+        <NumberOfFrames>10</NumberOfFrames>
+        <CMI>4000</CMI>
+        <Deadline>4000</Deadline>
+        <Source>ES408</Source>
+        <Targets>
+            <Target>
+                <Name>ES410</Name>
+            </Target>
+        </Targets>
+    </TTApplication>
+
+    <TTApplication>
+        <Name>APP_9</Name>
         <FrameSize>200</FrameSize>
         <NumberOfFrames>1</NumberOfFrames>
-        <CMI>125</CMI>
-        <Deadline>8000</Deadline>
+        <CMI>5000</CMI>
+        <Deadline>10000</Deadline>
         <Source>ES403</Source>
         <Targets>
             <Target>
@@ -126,6 +137,17 @@
                     <Switch>B306</Switch>
                 </Path>
             </Target>
+        </Targets>
+    </TTApplication>
+
+    <TTApplication>
+        <Name>APP_10</Name>
+        <FrameSize>200</FrameSize>
+        <NumberOfFrames>1</NumberOfFrames>
+        <CMI>2500</CMI>
+        <Deadline>10000</Deadline>
+        <Source>ES403</Source>
+        <Targets>
             <Target>
                 <Name>ES401</Name>
                 <Path>
@@ -136,5 +158,54 @@
             </Target>
         </Targets>
     </TTApplication>
+
+
+    <!-- I think TSNsched does not support multicast messages yet! -->
+
+<!--    <TTApplication>-->
+<!--        <Name>APP_7</Name>-->
+<!--        <FrameSize>5</FrameSize>-->
+<!--        <NumberOfFrames>10</NumberOfFrames>-->
+<!--        <CMI>4000</CMI>-->
+<!--        <Deadline>4000</Deadline>-->
+<!--        <Source>ES408</Source>-->
+<!--        <Targets>-->
+<!--            <Target>-->
+<!--                <Name>ES400</Name>-->
+<!--            </Target>-->
+<!--             <Target>-->
+<!--                <Name>ES410</Name>-->
+<!--            </Target>-->
+<!--        </Targets>-->
+<!--    </TTApplication>-->
+
+<!--    <TTApplication>-->
+<!--        <Name>APP_8</Name>-->
+<!--        <FrameSize>200</FrameSize>-->
+<!--        <NumberOfFrames>1</NumberOfFrames>-->
+<!--        <CMI>5000</CMI>-->
+<!--        <Deadline>10000</Deadline>-->
+<!--        <Source>ES403</Source>-->
+<!--        <Targets>-->
+<!--            <Target>-->
+<!--                <Name>ES405</Name>-->
+<!--                <Path>-->
+<!--                    <Switch>B304</Switch>-->
+<!--                    <Switch>B202</Switch>-->
+<!--                    <Switch>B101</Switch>-->
+<!--                    <Switch>B203</Switch>-->
+<!--                    <Switch>B306</Switch>-->
+<!--                </Path>-->
+<!--            </Target>-->
+<!--            <Target>-->
+<!--                <Name>ES401</Name>-->
+<!--                <Path>-->
+<!--                    <Switch>B304</Switch>-->
+<!--                    <Switch>B303</Switch>-->
+<!--                    <Switch>B302</Switch>-->
+<!--                </Path>-->
+<!--            </Target>-->
+<!--        </Targets>-->
+<!--    </TTApplication>-->
 
 </Applications>

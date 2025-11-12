@@ -1,5 +1,6 @@
 import re
 import os
+from pathlib import Path
 
 import networkx as nx
 
@@ -82,3 +83,33 @@ def get_topology_and_scenario_name(topology_file, scenario_file):
         scenario_name = matcher_scenario.group(1)
 
     return topology_name, scenario_name
+
+def create_scenario_output_path(bag):
+    result_list = list()
+
+    result_list.append("outputs")
+    result_list.append("PathFindingMethod=" + bag.get_path_finding_method())
+    result_list.append("Algorithm=" + bag.get_algorithm())
+    if bag.get_k() is not None:
+        result_list.append("K=" + bag.get_k())
+    if bag.get_meta_heuristic_name() is not None:
+        result_list.append("Metaheuristic Name=" + bag.get_meta_heuristic_name())
+
+    result_list.append(bag.get_topology_name() + "_" + bag.get_scenario_name())
+
+    output_path = Path(*result_list)
+
+    if not output_path.exists():
+        output_path.mkdir(parents=True)
+
+    return output_path
+
+def create_tsnsched_output_path(scenario_output_path):
+    tsnsched_output_path = os.path.join(scenario_output_path, "tsnsched")
+
+    tsnsched_output_path = Path(tsnsched_output_path)
+
+    if not tsnsched_output_path.exists():
+        tsnsched_output_path.mkdir(parents=True)
+
+    return tsnsched_output_path

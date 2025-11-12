@@ -10,12 +10,9 @@ class Graph:
     def add_node(self, node):
         self.nodes.append(node)
 
-    def add_edge(self, source_name, target_name, rate, idle_slope, weight):
-        source = self.get_node(source_name)
-        target = self.get_node(target_name)
-        if source and target:
-            edge = Edge(source, target, rate, idle_slope, weight)
-            self.edges.append(edge)
+    def add_edge(self, source, target, rate, idle_slope, weight):
+        edge = Edge(source, target, rate, idle_slope, weight)
+        self.edges.append(edge)
 
     def get_node(self, name):
         for node in self.nodes:
@@ -35,10 +32,3 @@ class Graph:
 
     def get_edges(self):
         return self.edges
-
-    def get_node_neighbor_list(self, node):
-        neighbor_list = list()
-        for edge in self.edges:
-            if edge.get_source() == node:
-                neighbor_list.append(edge.get_target())
-        return neighbor_list
