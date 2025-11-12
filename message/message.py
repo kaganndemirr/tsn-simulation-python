@@ -1,45 +1,43 @@
 class Message:
-    def __init__(self, application, target_list, path):
+    def __init__(self, application):
         self.application = application
-        self.target_list = target_list
-        self.path = path
+        self.path_list = None
 
     def get_application(self):
         return self.application
 
-    def get_target_list(self):
-        return self.target_list
+    def get_path_list(self):
+        return self.path_list
 
-    def get_path(self):
-        return self.path
+    def set_path_list(self, path_list):
+        self.path_list = path_list
 
     def __repr__(self):
-        return f"App: {self.application} Target: {self.target_list} Path: {self.path}"
+        return f"App: {self.application} Path List: {self.path_list}"
 
     def __eq__(self, other):
         if isinstance(other, Message):
-            return self.application == other.application and self.target_list == other.target_list and self.path == other.path
+            return self.application == other.application and self.path_list == other.path_list
         return False
 
     def __hash__(self):
-        return hash(self.application) + hash(self.target_list) + hash(self.path)
+        return hash(self.application) + hash(self.path_list)
 
 
 class MessageCandidate:
-    def __init__(self, application, target_list, candidate_path_list):
+    def __init__(self, application):
         self.application = application
-        self.target_list = target_list
-        self.candidate_path_list = candidate_path_list
+        self.candidate_path_list = None
 
     def get_application(self):
         return self.application
-
-    def get_target_list(self):
-        return self.target_list
 
     def get_candidate_path_list(self):
         return self.candidate_path_list
 
+    def set_candidate_path_list(self, candidate_path_list):
+        self.candidate_path_list = candidate_path_list
+
     def __repr__(self):
-        return f"App: {self.application} Target: {self.target_list} Candidate Paths: {self.candidate_path_list}"
+        return f"App: {self.application} Candidate Path List: {self.candidate_path_list}"
 

@@ -1,7 +1,7 @@
 import argparse
 import logging
 import os
-import re
+import json
 
 from util import constants
 
@@ -10,18 +10,21 @@ from parser.topology_parser import topology_parser
 
 from evaluator.avb_latency_math import AVBLatencyMath
 
+from tsnsched.tsnsched import TSNsched
+from tsnsched.tsnsched_json import TSNschedJson
+from tsnsched.run_tsnsched import run_tsnsched
+
 from util.bag import Bag
-from util.log_functions import create_info, found_solution, found_no_solution
+from util.helper_functions import get_topology_and_scenario_name
+from util.log_functions import create_info, found_solution, found_no_solution, create_scenario_output_path
 from util.ro_functions import find_shortest_path_for_tt_applications
 
 from solver.shortest_path_solver import ShortestPathSolver
 from solver.meta_heuristic_solver import GRASP
 
-from outputs.shapers.phy_shortest_path_result_shaper import ShortestPathResultShaper
-
 
 parser = argparse.ArgumentParser(prog='tsn_simulation')
-parser.add_argument('-network', help="Use given file as network", type=str)
+parser.add_argument('-topology', help="Use given file as topology", type=str)
 parser.add_argument('-scenario', help="Use given file as scenario", type=str)
 parser.add_argument('-cmi', help="CMI value for SRT Applications", type=str)
 
@@ -38,7 +41,7 @@ parser.add_argument('-metaheuristic_name', help="Which metaheuristic runs (Defau
 
 args = parser.parse_args()
 
-network_file = args.network
+topology_file = args.topology
 scenario_file = args.scenario
 
 evaluator = AVBLatencyMath()
@@ -90,9 +93,9 @@ if args.metaheuristic_name:
 else:
     metaheuristic_name = "GRASP"
 
-logger.info(f"Parsing topology from {os.path.basename(network_file)}!")
-graph = topology_parser(network_file)
-logger.info(f"Topology successfully parsed {os.path.basename(network_file)}!")
+logger.info(f"Parsing topology from {os.path.basename(topology_file)}!")
+graph = topology_parser(topology_file)
+logger.info(f"Topology successfully parsed {os.path.basename(topology_file)}!")
 
 logger.info(f"Parsing application from {os.path.basename(scenario_file)}!")
 application_list = application_parser(scenario_file, graph, cmi)
@@ -102,18 +105,7 @@ logger.info(f"Finding shortest paths for TT Applications!")
 tt_message_list = find_shortest_path_for_tt_applications(graph, application_list)
 logger.info(f"Finding shortest paths successfully for TT Applications!")
 
-topology_name = None
-scenario_name = None
-
-pattern_topology = re.compile(r"(.+?)(?=\.graphml)")
-matcher_topology = pattern_topology.search(os.path.basename(network_file))
-if matcher_topology:
-    topology_name = matcher_topology.group(1)
-
-pattern_scenario = re.compile(r"(?<=_)(.*?)(?=\.xml)")
-matcher_scenario = pattern_scenario.search(os.path.basename(scenario_file))
-if matcher_scenario:
-    scenario_name = matcher_scenario.group(1)
+topology_name, scenario_name = get_topology_and_scenario_name(topology_file, scenario_file)
 
 if path_finding_method == "shortest_path":
     shortest_path_solver = ShortestPathSolver()
@@ -121,10 +113,25 @@ if path_finding_method == "shortest_path":
     bag = Bag()
     bag.set_path_finding_method(path_finding_method)
     bag.set_algorithm(algorithm)
+    bag.set_topology_name(topology_name)
+    bag.set_scenario_name(scenario_name)
+
+    logger.info(f"Creating input.json for TSNsched!")
+    tsnsched = TSNsched(graph, tt_message_list)
+    tsnsched_json = TSNschedJson(tsnsched)
+    tsnsched_dict = tsnsched_json.to_dict()
+    output_path = create_scenario_output_path(bag)
+    with open(os.path.join(output_path, "input.json"), "w", encoding="utf-8") as f:
+        json.dump(tsnsched_dict, f, ensure_ascii=False, indent=2)
+    logger.info(f"input.json created successfully!")
+
+    logger.info(f"Running TSNsched!")
+    run_tsnsched(output_path)
+    logger.info(f"Schedule generated!")
 
     logger.info(create_info(bag))
 
-    solution = shortest_path_solver.solve(graph, application_list, algorithm, tt_unicast_list)
+    solution = shortest_path_solver.solve(graph, application_list, algorithm, tt_message_list)
 
     if solution.get_multicast_list() is None or len(solution.get_multicast_list()) == 0 :
         logger.info(constants.NO_SOLUTION_COULD_BE_FOUND)

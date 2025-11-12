@@ -19,3 +19,13 @@ BPS = 0.000001
 
 DIJKSTRA = "dijkstra"
 YEN = "yen"
+
+UNICAST = "unicast"
+MULTICAST = "multicast"
+
+TRUE = "true"
+
+MICRO_CYCLE = "microcycle"
+MACRO_CYCLE = "macrocycle"
+
+TT_PCP = 7

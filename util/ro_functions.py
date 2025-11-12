@@ -1,7 +1,6 @@
 import random
 
 from application.application import TTApplication
-from application.path import Path
 
 from evaluator.avb_latency_math_cost import AVBLatencyMathCost
 
@@ -75,17 +74,23 @@ def find_shortest_path_for_tt_applications(graph, application_list):
     tt_message_list = list()
     for application in application_list:
         if isinstance(application, TTApplication):
-            for target in application.get_target_list():
-                if len(application.get_path_list()) != 0:
-                    for path in application.get_path_list():
-                        if path.get_target() == target:
-                            tt_message_list.append(Message(application, [target], path.get_path()))
-                            break
-                else:
+            tt_message = Message(application)
+            path_list = list()
+
+            if len(application.get_path_list()) != 0:
+                for path in application.get_path_list():
+                    path_list.append(path)
+
+            else:
+                for target in application.get_target_list():
                     g = convert_graph_to_nx_graph(graph, application.get_source(), target)
                     shortest_path_as_string_list = dijkstra_shortest_path(g, application.get_source().get_name(), target.get_name(), weight='weight')
                     shortest_path_as_node_list = create_path_as_node_list(shortest_path_as_string_list[0], shortest_path_as_string_list[1:-1], shortest_path_as_string_list[-1])
                     shortest_path = create_path_as_edge_list(shortest_path_as_node_list, graph)
-                    tt_message_list.append(Message(application, [target], shortest_path))
+                    path_list.append(shortest_path)
+
+            tt_message.set_path_list(path_list)
+
+            tt_message_list.append(tt_message)
 
     return tt_message_list

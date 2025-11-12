@@ -1,9 +1,7 @@
 import xml.etree.ElementTree as Et
 
 from application.application import NonTTApplication, TTApplication
-from application.path import Path
 
-from util import constants
 from util.helper_functions import compute_mbps, create_path_as_list, create_path_as_edge_list
 
 
@@ -30,13 +28,12 @@ def application_parser(app_file, graph, cmi):
             target = graph.get_node(target_element_name)
             target_list.append(target)
 
-            path_elememt = target_element.find('Path')
-            if path_elememt is not None:
-                switch_list = [switch.text for switch in path_elememt.findall('Switch')]
+            path_element = target_element.find('Path')
+            if path_element is not None:
+                switch_list = [switch.text for switch in path_element.findall('Switch')]
                 path_as_list = create_path_as_list(source, switch_list, target)
                 path_as_edge_list = create_path_as_edge_list(path_as_list, graph)
-                path = Path(target, path_as_edge_list)
-                path_list.append(path)
+                path_list.append(path_as_edge_list)
 
 
         application_list.append(NonTTApplication(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, path_list))
@@ -59,13 +56,12 @@ def application_parser(app_file, graph, cmi):
             target = graph.get_node(target_element_name)
             target_list.append(target)
 
-            path_elememt = target_element.find('Path')
-            if path_elememt is not None:
-                switch_list = [switch.text for switch in path_elememt.findall('Switch')]
+            path_element = target_element.find('Path')
+            if path_element is not None:
+                switch_list = [switch.text for switch in path_element.findall('Switch')]
                 path_as_list = create_path_as_list(source, switch_list, target)
                 path_as_edge_list = create_path_as_edge_list(path_as_list, graph)
-                path = Path(target, path_as_edge_list)
-                path_list.append(path)
+                path_list.append(path_as_edge_list)
 
         application_list.append(TTApplication(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, path_list))
 

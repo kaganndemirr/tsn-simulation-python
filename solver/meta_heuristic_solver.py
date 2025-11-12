@@ -5,8 +5,6 @@ import time
 
 from evaluator.avb_latency_math_cost import AVBLatencyMathCost
 
-from message.multicast import Multicast
-
 from path_finding.k_shortest_path import YenKShortestPath
 from solver.solution import Solution
 

@@ -1,4 +1,6 @@
 from architecture.edge import Edge
+from architecture.node import EndSystem
+
 
 class Graph:
     def __init__(self):
@@ -33,3 +35,10 @@ class Graph:
 
     def get_edges(self):
         return self.edges
+
+    def get_node_neighbor_list(self, node):
+        neighbor_list = list()
+        for edge in self.edges:
+            if edge.get_source() == node:
+                neighbor_list.append(edge.get_target())
+        return neighbor_list

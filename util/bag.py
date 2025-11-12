@@ -7,6 +7,8 @@ class Bag:
         self.meta_heuristic_name = None
         self.thread_number = None
         self.timeout = None
+        self.topology_name = None
+        self.scenario_name = None
 
     def get_path_finding_method(self):
         return self.path_finding_method
@@ -43,4 +45,16 @@ class Bag:
 
     def set_timeout(self, timeout):
         self.timeout = timeout
+
+    def get_topology_name(self):
+        return self.topology_name
+
+    def set_topology_name(self, topology_name):
+        self.topology_name = topology_name
+
+    def get_scenario_name(self):
+        return self.scenario_name
+
+    def set_scenario_name(self, scenario_name):
+        self.scenario_name = scenario_name
 

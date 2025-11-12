@@ -59,7 +59,7 @@
 
     <TTApplication>
         <Name>APP_5</Name>
-        <FrameSize>1500</FrameSize>
+        <FrameSize>100</FrameSize>
         <NumberOfFrames>1</NumberOfFrames>
         <CMI>125</CMI>
         <Deadline>8000</Deadline>
@@ -79,8 +79,8 @@
 
     <TTApplication>
         <Name>APP_6</Name>
-        <FrameSize>875</FrameSize>
-        <NumberOfFrames>6</NumberOfFrames>
+        <FrameSize>30</FrameSize>
+        <NumberOfFrames>3</NumberOfFrames>
         <CMI>65.5</CMI>
         <Deadline>500</Deadline>
         <Source>ES400</Source>
@@ -94,7 +94,7 @@
     <TTApplication>
         <Name>APP_7</Name>
         <FrameSize>5</FrameSize>
-        <NumberOfFrames>60</NumberOfFrames>
+        <NumberOfFrames>10</NumberOfFrames>
         <CMI>65.5</CMI>
         <Deadline>2000</Deadline>
         <Source>ES408</Source>
@@ -104,6 +104,35 @@
             </Target>
              <Target>
                 <Name>ES410</Name>
+            </Target>
+        </Targets>
+    </TTApplication>
+
+    <TTApplication>
+        <Name>APP_8</Name>
+        <FrameSize>200</FrameSize>
+        <NumberOfFrames>1</NumberOfFrames>
+        <CMI>125</CMI>
+        <Deadline>8000</Deadline>
+        <Source>ES403</Source>
+        <Targets>
+            <Target>
+                <Name>ES405</Name>
+                <Path>
+                    <Switch>B304</Switch>
+                    <Switch>B202</Switch>
+                    <Switch>B101</Switch>
+                    <Switch>B203</Switch>
+                    <Switch>B306</Switch>
+                </Path>
+            </Target>
+            <Target>
+                <Name>ES401</Name>
+                <Path>
+                    <Switch>B304</Switch>
+                    <Switch>B303</Switch>
+                    <Switch>B302</Switch>
+                </Path>
             </Target>
         </Targets>
     </TTApplication>
