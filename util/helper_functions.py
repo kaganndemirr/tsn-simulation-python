@@ -34,7 +34,7 @@ def create_path_as_edge_list(path_as_list, graph):
 def convert_graph_to_nx_graph(graph, source, target):
     g = nx.DiGraph()
 
-    for edge in graph.get_edges():
+    for edge in graph.get_edge_list():
         if isinstance(edge.get_source(), Switch) and isinstance(edge.get_target(), Switch):
             g.add_edge(edge.get_source().get_name(), edge.get_target().get_name())
             g[edge.get_source().get_name()][edge.get_target().get_name()]['weight'] = edge.get_weight()
@@ -84,7 +84,7 @@ def get_topology_and_scenario_name(topology_file, scenario_file):
 
     return topology_name, scenario_name
 
-def create_scenario_output_path(bag):
+def create_result_output_path(bag):
     result_list = list()
 
     result_list.append("outputs")
@@ -95,14 +95,24 @@ def create_scenario_output_path(bag):
     if bag.get_meta_heuristic_name() is not None:
         result_list.append("Metaheuristic Name=" + bag.get_meta_heuristic_name())
 
-    result_list.append(bag.get_topology_name() + "_" + bag.get_scenario_name())
+    result_output_path = Path(*result_list)
 
-    output_path = Path(*result_list)
+    if not result_output_path.exists():
+        result_output_path.mkdir(parents=True)
 
-    if not output_path.exists():
-        output_path.mkdir(parents=True)
+    return result_output_path
 
-    return output_path
+def create_scenario_output_path(bag):
+    result_output_path = create_result_output_path(bag)
+
+    scenario_output_path = os.path.join(result_output_path, bag.get_topology_name() + "_" + bag.get_scenario_name())
+
+    scenario_output_path = Path(scenario_output_path)
+
+    if not scenario_output_path.exists():
+        scenario_output_path.mkdir(parents=True)
+
+    return scenario_output_path
 
 def create_tsnsched_output_path(scenario_output_path):
     tsnsched_output_path = os.path.join(scenario_output_path, "tsnsched")

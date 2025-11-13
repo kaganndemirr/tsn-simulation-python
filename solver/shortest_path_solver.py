@@ -30,7 +30,7 @@ class ShortestPathSolver:
 
         self.duration_dict[float(cost.get_string().split(" ")[0])] = (shortest_path_timer_end - shortest_path_timer_start)
 
-        return Solution(cost, Multicast.generate_multicast(self.solution))
+        return Solution(cost, self.solution)
 
     def get_solution(self):
         return self.solution

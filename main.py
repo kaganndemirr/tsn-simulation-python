@@ -17,9 +17,10 @@ from tsnsched.run_tsnsched import run_tsnsched
 from tsnsched.output_json import parse_output_json
 
 from util.bag import Bag
-from util.helper_functions import get_topology_and_scenario_name, create_scenario_output_path, create_tsnsched_output_path
+from util.helper_functions import get_topology_and_scenario_name, create_scenario_output_path, create_tsnsched_output_path, create_result_output_path
 from util.log_functions import create_info, found_solution, found_no_solution
 from util.ro_functions import find_shortest_path_for_tt_applications
+from util.output_functions import write_path_to_file, write_worst_case_delay_to_file
 
 from solver.shortest_path_solver import ShortestPathSolver
 from solver.meta_heuristic_solver import GRASP
@@ -134,18 +135,24 @@ if path_finding_method == "shortest_path":
 
     logger.info(f"GCL deploying to Edges!")
     parse_output_json(tsnsched_output_path, graph)
+    logger.info(f"GCL successfully deployed to Edges!")
 
     logger.info(create_info(bag))
 
     solution = shortest_path_solver.solve(graph, application_list, algorithm, tt_message_list)
 
-    if solution.get_multicast_list() is None or len(solution.get_multicast_list()) == 0 :
+    solution.get_cost().write_result_to_file(bag)
+
+    if solution.get_message_list() is None or len(solution.get_message_list()) == 0:
         logger.info(constants.NO_SOLUTION_COULD_BE_FOUND)
     else:
         if solution.get_cost().get_total_cost() == float('inf'):
             logger.info(found_no_solution(solution))
         else:
             logger.info(found_solution(solution))
+
+            write_path_to_file(scenario_output_path, shortest_path_solver.get_solution())
+            write_worst_case_delay_to_file(scenario_output_path, solution.get_cost().get_worst_case_delay_dict(), create_result_output_path(bag))
 
 elif path_finding_method == "yen":
     if metaheuristic_name == "GRASP":

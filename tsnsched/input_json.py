@@ -1,19 +1,18 @@
 class TSNschedInputJson:
     def __init__(self, tsnsched):
-        self.devices = tsnsched.get_devices()
-        self.flow = tsnsched.get_flows()
-        self.switches = tsnsched.get_switches()
+        self.device_list = tsnsched.get_device_list()
+        self.flow_list = tsnsched.get_flow_list()
+        self.switch_list = tsnsched.get_switch_list()
     
     def to_dict(self):
         return {
-            "devices": [self._device_to_dict(device) for device in self.devices],
-            "flows": [self._flow_to_dict(flow) for flow in self.flow],
-            "switches": [self._switch_to_dict(switch) for switch in self.switches]
+            "devices": [self._device_to_dict(device) for device in self.device_list],
+            "flows": [self._flow_to_dict(flow) for flow in self.flow_list],
+            "switches": [self._switch_to_dict(switch) for switch in self.switch_list]
         }
 
     @staticmethod
     def _device_to_dict(device):
-
         if isinstance(device, dict):
             return device
         if hasattr(device, '__dict__'):

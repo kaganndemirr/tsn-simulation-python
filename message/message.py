@@ -21,7 +21,7 @@ class Message:
         return False
 
     def __hash__(self):
-        return hash(self.application) + hash(self.path_list)
+        return hash(self.application) + hash(str(self.path_list))
 
 
 class MessageCandidate:

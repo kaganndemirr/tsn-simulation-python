@@ -13,16 +13,15 @@ class TSNsched:
         self.graph = graph
         self.tt_message_list = tt_message_list
 
-    def get_devices(self):
-        devices = []
-        for node in self.graph.get_nodes():
-            if isinstance(node, EndSystem):
-                devices.append(Device(node))
+    def get_device_list(self):
+        device_list = []
+        for end_system in self.graph.get_end_system_list():
+            device_list.append(Device(end_system))
 
-        return devices
+        return device_list
 
-    def get_flows(self):
-        flows = list()
+    def get_flow_list(self):
+        flow_list = list()
         for message in self.tt_message_list:
             name = message.get_application().get_name()
             if len(message.get_path_list()) > 1:
@@ -44,26 +43,25 @@ class TSNsched:
                     hops.append(hop)
 
             flow = Flow(name, type, priority_value, packet_size, source_device, end_devices, packet_periodicity, hard_constraint_time, fixed_priority, hops)
-            flows.append(flow)
+            flow_list.append(flow)
 
-        return flows
+        return flow_list
 
-    def get_switches(self):
-        switches = list()
-        for node in self.graph.get_nodes():
-            if isinstance(node, Switch):
-                switch_name = node.get_name()
-                port_list = node.get_port_list()
-                ports = list()
-                for port in port_list:
-                    port_name = port.get_name()
-                    connects_to = port.get_connects_to()
-                    port_speed = self.graph.get_edge(node, self.graph.get_node(connects_to)).get_rate()
-                    schedule_type = constants.MICRO_CYCLE
-                    port = Port(port_name, connects_to, port_speed, schedule_type)
-                    ports.append(port)
+    def get_switch_list(self):
+        switch_list = list()
+        for switch in self.graph.get_switch_list():
+            switch_name = switch.get_name()
+            port_list = switch.get_port_list()
+            ports = list()
+            for port in port_list:
+                port_name = port.get_name()
+                connects_to = port.get_connects_to()
+                port_speed = self.graph.get_edge(switch, self.graph.get_node(connects_to)).get_rate()
+                schedule_type = constants.MICRO_CYCLE
+                port = Port(port_name, connects_to, port_speed, schedule_type)
+                ports.append(port)
 
-                switch = TSNschedSwitch(switch_name, ports)
-                switches.append(switch)
+            switch = TSNschedSwitch(switch_name, ports)
+            switch_list.append(switch)
 
-        return switches
+        return switch_list

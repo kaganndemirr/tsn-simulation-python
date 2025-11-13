@@ -14,10 +14,8 @@ class ShortestPath:
         for application in application_list:
             if isinstance(application, NonTTApplication):
                 non_tt_message = Message(application)
-                target_list = list()
                 path_list = list()
                 for target in application.get_target_list():
-                    target_list.append(target)
                     g = convert_graph_to_nx_graph(graph, application.get_source(), target)
                     shortest_path_as_string_list = list()
                     if algorithm == constants.DIJKSTRA:
@@ -27,7 +25,6 @@ class ShortestPath:
                     shortest_path = create_path_as_edge_list(shortest_path_as_node_list, graph)
                     path_list.append(shortest_path)
 
-                non_tt_message.set_target_list(target_list)
                 non_tt_message.set_path_list(path_list)
 
                 self.non_tt_message_list.append(non_tt_message)
