@@ -28,5 +28,7 @@ def parse_output_json(tsnsched_output_path, graph):
                 if node.get_name() == switch["name"]:
                     ports = switch["ports"]
                     for port in ports:
-                        print(port)
+                        if port["cycleDuration"] is not 0:
+                            for priority_slot in port["prioritySlotsData"]:
+                                print(priority_slot)
 
