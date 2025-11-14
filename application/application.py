@@ -1,5 +1,5 @@
 class Application:
-    def __init__(self, name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, path_list):
+    def __init__(self, name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, explicit_path_list):
         self.name = name
         self.cmi = cmi
         self.deadline = deadline
@@ -9,7 +9,7 @@ class Application:
         self.message_size_mbps = message_size_mbps
         self.source = source
         self.target_list = target_list
-        self.path_list = path_list
+        self.explicit_path_list = explicit_path_list
 
 
     def get_name(self):
@@ -39,11 +39,11 @@ class Application:
     def get_target_list(self):
         return self.target_list
 
-    def get_path_list(self):
-        return self.path_list
+    def get_explicit_path_list(self):
+        return self.explicit_path_list
 
     def __repr__(self):
-        return f"Name: {self.name} CMI(us): {self.cmi} Deadline(us): {self.deadline} Frame Size(B): {self.frame_size_byte} #Frames: {self.number_of_frames} Message Size (B): {self.message_size_byte} Message Size (mbps): {self.message_size_mbps} Source: {self.source.get_name()} -> Target List: {self.target_list} Path List: {self.path_list}"
+        return f"Name: {self.name} CMI(us): {self.cmi} Deadline(us): {self.deadline} Frame Size(B): {self.frame_size_byte} #Frames: {self.number_of_frames} Message Size (B): {self.message_size_byte} Message Size (mbps): {self.message_size_mbps} Source: {self.source.get_name()} Target List: {self.target_list} Explicit Path List: {self.explicit_path_list}"
 
     def __eq__(self, other):
         if isinstance(other, Application):
@@ -55,10 +55,10 @@ class Application:
 
 class NonTTApplication(Application):
 
-    def __init__(self, name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps,  source, target_list, path_list):
-        super().__init__(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, path_list)
+    def __init__(self, name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps,  source, target_list, explicit_path_list):
+        super().__init__(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, explicit_path_list)
 
 
 class TTApplication(Application):
-    def __init__(self, name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, path_list):
-        super().__init__(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, path_list)
+    def __init__(self, name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, explicit_path_list):
+        super().__init__(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, explicit_path_list)

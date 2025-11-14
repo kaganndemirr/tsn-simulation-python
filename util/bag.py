@@ -1,6 +1,9 @@
 class Bag:
     
     def __init__(self):
+        self.graph = None
+        self.application_list = None
+        self.tt_message_list = None
         self.path_finding_method = None
         self.algorithm = None
         self.k = None
@@ -9,6 +12,24 @@ class Bag:
         self.timeout = None
         self.topology_name = None
         self.scenario_name = None
+
+    def get_graph(self):
+        return self.graph
+
+    def set_graph(self, graph):
+        self.graph = graph
+
+    def get_application_list(self):
+        return self.application_list
+
+    def set_application_list(self, application_list):
+        self.application_list = application_list
+
+    def get_tt_message_list(self):
+        return self.tt_message_list
+
+    def set_tt_message_list(self, tt_message_list):
+        self.tt_message_list = tt_message_list
 
     def get_path_finding_method(self):
         return self.path_finding_method

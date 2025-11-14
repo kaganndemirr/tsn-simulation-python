@@ -29,3 +29,6 @@ MICRO_CYCLE = "microcycle"
 MACRO_CYCLE = "macrocycle"
 
 TT_PCP = 7
+
+GRASP = "grasp"
+ALO = "alo"

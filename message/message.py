@@ -1,27 +1,27 @@
 class Message:
     def __init__(self, application):
         self.application = application
-        self.path_list = None
+        self.path = None
 
     def get_application(self):
         return self.application
 
-    def get_path_list(self):
-        return self.path_list
+    def get_path(self):
+        return self.path
 
-    def set_path_list(self, path_list):
-        self.path_list = path_list
+    def set_path(self, path):
+        self.path = path
 
     def __repr__(self):
-        return f"App: {self.application} Path List: {self.path_list}"
+        return f"App: {self.application} Path: {self.path}"
 
     def __eq__(self, other):
         if isinstance(other, Message):
-            return self.application == other.application and self.path_list == other.path_list
+            return self.application == other.application and self.path == other.path
         return False
 
     def __hash__(self):
-        return hash(self.application) + hash(str(self.path_list))
+        return hash(self.application) + hash(str(self.path))
 
 
 class MessageCandidate:
@@ -40,4 +40,12 @@ class MessageCandidate:
 
     def __repr__(self):
         return f"App: {self.application} Candidate Path List: {self.candidate_path_list}"
+
+    def __eq__(self, other):
+        if isinstance(other, MessageCandidate):
+            return self.application == other.application and self.candidate_path_list == other.candidate_path_list
+        return False
+
+    def __hash__(self):
+        return hash(self.application) + hash(str(self.candidate_path_list))
 

@@ -1,5 +1,3 @@
-from architecture.node import Switch, EndSystem
-
 from tsnsched.device import Device
 from tsnsched.flow import Flow, Hop
 from tsnsched.switch import Switch as TSNschedSwitch
@@ -24,7 +22,7 @@ class TSNsched:
         flow_list = list()
         for message in self.tt_message_list:
             name = message.get_application().get_name()
-            if len(message.get_path_list()) > 1:
+            if len(message.get_application().get_target_list()) > 1:
                 type = constants.MULTICAST
             else:
                 type = constants.UNICAST
@@ -36,13 +34,12 @@ class TSNsched:
             hard_constraint_time = message.get_application().get_deadline()
             fixed_priority = constants.TRUE
 
-            hops = list()
-            for path in message.get_path_list():
-                for edge in path:
-                    hop = Hop(edge.get_source().get_name(), edge.get_target().get_name())
-                    hops.append(hop)
+            hop_list = list()
+            for edge in message.get_path():
+                hop = Hop(edge.get_source().get_name(), edge.get_target().get_name())
+                hop_list.append(hop)
 
-            flow = Flow(name, type, priority_value, packet_size, source_device, end_devices, packet_periodicity, hard_constraint_time, fixed_priority, hops)
+            flow = Flow(name, type, priority_value, packet_size, source_device, end_devices, packet_periodicity, hard_constraint_time, fixed_priority, hop_list)
             flow_list.append(flow)
 
         return flow_list

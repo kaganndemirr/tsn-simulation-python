@@ -57,16 +57,41 @@ def create_path_as_node_list(source, switch_list, target):
     return path_as_node_list
 
 
-def generate_multicast_if_necessary_for_shortest_path(message_list):
-    for message in message_list:
-        merged_path = list(message.get_path_list()[0])
-        if len(message.get_path_list()) > 1:
-            for path in  message.get_path_list()[1:]:
-                for edge in path:
-                    if edge not in merged_path:
-                        merged_path.append(edge)
+def generate_multicast_path_for_shortest_path(path_list):
+    if len(path_list) == 1:
+        return path_list[0]
+    else:
+        final_path = path_list[0]
+        for path in path_list[1:]:
+            for edge in path:
+                if edge not in final_path:
+                    final_path.append(edge)
 
-            message.set_path_list([merged_path])
+        return final_path
+
+
+def generate_multicast_path_for_k_shortest_path(candidate_path_list_for_all_targets):
+    if len(candidate_path_list_for_all_targets) == 1:
+        return candidate_path_list_for_all_targets[0]
+    else:
+        number_of_groups = len(candidate_path_list_for_all_targets)
+        number_of_items = len(candidate_path_list_for_all_targets[0])
+
+        final_candidate_path_list = list()
+
+        for i in range(number_of_items):
+            column_lists = [candidate_path_list_for_all_targets[g][i] for g in range(number_of_groups)]
+
+            base = column_lists[0].copy()
+
+            for other_list in column_lists[1:]:
+                for item in other_list:
+                    if item not in base:
+                        base.append(item)
+
+            final_candidate_path_list.append(base)
+
+        return final_candidate_path_list
 
 def get_topology_and_scenario_name(topology_file, scenario_file):
     topology_name = None
@@ -91,7 +116,7 @@ def create_result_output_path(bag):
     result_list.append("PathFindingMethod=" + bag.get_path_finding_method())
     result_list.append("Algorithm=" + bag.get_algorithm())
     if bag.get_k() is not None:
-        result_list.append("K=" + bag.get_k())
+        result_list.append("K=" + str(bag.get_k()))
     if bag.get_meta_heuristic_name() is not None:
         result_list.append("Metaheuristic Name=" + bag.get_meta_heuristic_name())
 
