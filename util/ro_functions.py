@@ -1,6 +1,6 @@
 import random
 
-from application.application import TTApplication
+from application.application import TTApplication, NonTTApplication
 
 from avb_latency_math.avb_latency_math_cost import AVBLatencyMathCost
 
@@ -48,26 +48,29 @@ def grasp(initial_solution, avb_latency_math, non_tt_message_candidate_list, glo
 
         old_message = solution[index]
 
-        if old_message in mapping.keys():
-            old_message_candidate = mapping[old_message]
-        else:
+        if isinstance(old_message.get_application(), NonTTApplication):
+
             old_message_candidate = None
-
-        if isinstance(old_message_candidate, MessageCandidate):
-            for candidate_path in old_message_candidate.get_candidate_path_list():
-                temp_message = Message(old_message.get_application())
-                temp_message.set_path(candidate_path)
-                solution[index] = temp_message
-                cost = avb_latency_math.evaluate(solution)
-
-                if cost.get_total_cost() < best_cost.get_total_cost():
-                    best_cost = cost
-                    sample -= 1
-                    if cost.get_total_cost() < global_best_cost.get_total_cost():
-                        sample -= len(solution) // 2
+            for message_candidate_key, message_candidate_value in mapping.items():
+                if old_message.get_application() == message_candidate_key.get_application():
+                    old_message_candidate = message_candidate_value
                     break
-                else:
-                    solution[index] = old_message
+
+            if isinstance(old_message_candidate, MessageCandidate):
+                for candidate_path in old_message_candidate.get_candidate_path_list():
+                    temp_message = Message(old_message_candidate.get_application())
+                    temp_message.set_path(candidate_path)
+                    solution[index] = temp_message
+                    cost = avb_latency_math.evaluate(solution)
+
+                    if cost.get_total_cost() < best_cost.get_total_cost():
+                        best_cost = cost
+                        sample -= 1
+                        if cost.get_total_cost() < global_best_cost.get_total_cost():
+                            sample -= len(solution) // 2
+                        break
+                    else:
+                        solution[index] = old_message
 
     return solution
 
