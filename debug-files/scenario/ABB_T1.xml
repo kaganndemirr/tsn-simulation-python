@@ -3,7 +3,7 @@
         <Name>APP_1</Name>
         <FrameSize>1500</FrameSize>
         <NumberOfFrames>1</NumberOfFrames>
-        <Deadline>1000</Deadline>
+        <Deadline>2000</Deadline>
         <Source>ES400</Source>
         <Targets>
             <Target>
@@ -15,8 +15,8 @@
     <NonTTApplication>
         <Name>APP_2</Name>
         <FrameSize>1500</FrameSize>
-        <NumberOfFrames>1</NumberOfFrames>
-        <Deadline>2000</Deadline>
+        <NumberOfFrames>10</NumberOfFrames>
+        <Deadline>8000</Deadline>
         <Source>ES401</Source>
         <Targets>
             <Target>
@@ -158,7 +158,6 @@
             </Target>
         </Targets>
     </TTApplication>
-
 
     <!-- I think TSNsched does not support multicast messages yet! -->
 

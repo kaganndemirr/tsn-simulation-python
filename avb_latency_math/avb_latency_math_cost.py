@@ -46,7 +46,7 @@ class AVBLatencyMathCost:
         return self.worst_case_delay_dict
 
     def get_string(self):
-        return f"{self.get_total_cost()} (current o1 = {self.objective_1}, o2 {self.objective_2}, o3 {self.objective_3})"
+        return f"{self.get_total_cost()} (current o1 = {self.objective_1}, o2 = {self.objective_2}, o3 = {self.objective_3})"
 
     def get_detailed_string(self):
         return f"Total: {self.get_total_cost()} | o1 = {self.objective_1}, o2 = {self.objective_2}, o3 = {self.objective_3} -- {self.worst_case_delay_dict}"

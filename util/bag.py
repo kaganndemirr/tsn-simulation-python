@@ -8,8 +8,7 @@ class Bag:
         self.algorithm = None
         self.k = None
         self.meta_heuristic_name = None
-        self.thread_number = None
-        self.timeout = None
+        self.max_iteration_number = None
         self.topology_name = None
         self.scenario_name = None
 
@@ -55,17 +54,11 @@ class Bag:
     def set_meta_heuristic_name(self, meta_heuristic_name):
         self.meta_heuristic_name = meta_heuristic_name
 
-    def get_thread_number(self):
-        return self.thread_number
+    def get_max_iteration_number(self):
+        return self.max_iteration_number
 
-    def set_thread_number(self, thread_number):
-        self.thread_number = thread_number
-
-    def get_timeout(self):
-        return self.timeout
-
-    def set_timeout(self, timeout):
-        self.timeout = timeout
+    def set_max_iteration_number(self, max_iteration_number):
+        self.max_iteration_number = max_iteration_number
 
     def get_topology_name(self):
         return self.topology_name

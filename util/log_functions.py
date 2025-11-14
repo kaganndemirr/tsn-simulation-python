@@ -5,10 +5,8 @@ def create_info(bag):
         result += ", K: " + str(bag.get_k())
     if bag.get_meta_heuristic_name() is not None:
         result += ", Metaheuristic Name: " + bag.get_meta_heuristic_name()
-    if bag.get_thread_number() is not None:
-        result += ", Thread Number: " + str(bag.get_thread_number())
-    if bag.get_timeout() is not None:
-        result += ", Timeout: " + str(bag.get_timeout())
+    if bag.get_max_iteration_number() is not None:
+        result += ", Max Iteration Number: " + str(bag.get_max_iteration_number())
     return result
 
 def found_solution(solution):

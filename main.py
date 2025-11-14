@@ -31,8 +31,7 @@ parser.add_argument('-scenario', help="Use given file as scenario", type=str)
 parser.add_argument('-cmi', help="CMI value for SRT Applications", type=str)
 
 parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", type=int)
-parser.add_argument('-thread_number', help="Thread number (Default: Number of Processor Thread)", type=int)
-parser.add_argument('-timeout', help="Metaheuristic algorithm timeout (Type: Second) (Default: 60", type=int)
+parser.add_argument('-max_iteration_number', help="Max Iteration Number (Default: 1000)", type=int)
 
 parser.add_argument('-path_finding_method', help="Choose path finder method (Default = yen) (Choices: shortestPath, yen)", type=str)
 parser.add_argument('-algorithm', help="Choose algorithm for shortestPath (Default = dijkstra) (Choices: dijkstra)", type=str)
@@ -58,15 +57,10 @@ if args.k:
 else:
     k = 50
 
-if args.thread_number:
-    thread_number = args.thread_number
+if args.max_iteration_number:
+    max_iteration_number = args.max_iteration_number
 else:
-    thread_number = os.cpu_count()
-
-if args.timeout:
-    timeout = args.timeout
-else:
-    timeout = 60
+    max_iteration_number = 1000
 
 if args.path_finding_method:
     path_finding_method = args.path_finding_method
@@ -163,10 +157,8 @@ elif path_finding_method == "yen":
     metaheuristic_solver = MetaheuristicSolver()
 
     bag.set_path_finding_method(path_finding_method)
-    bag.set_algorithm(algorithm)
     bag.set_k(k)
-    bag.set_thread_number(thread_number)
-    bag.set_timeout(timeout)
+    bag.set_max_iteration_number(max_iteration_number)
     bag.set_meta_heuristic_name(metaheuristic_name)
 
     logger.info(f"Creating input.json for TSNsched!")
@@ -192,31 +184,3 @@ elif path_finding_method == "yen":
     solution = metaheuristic_solver.solve(bag)
 
     solution.get_cost().write_result_to_file(bag)
-
-    if metaheuristic_name == "GRASP":
-        grasp = GRASP(k)
-
-        # logger.info(f"Solving problem using {routing}, {path_finder_method}, {algorithm}, {k}!")
-        solution = grasp.solve(graph, application_list, evaluator, thread_number, timeout)
-
-        # solution.get_cost().write_phy_result_to_file(phy_holder)
-
-        if solution.get_multicast_list() is None or not solution.get_multicast_list():
-            logger.info("No solution could be found!")
-        else:
-            if solution.get_cost().get_total_cost() == float('inf'):
-                logger.info(f"Found no solution: {solution.get_cost().get_detailed_string()}")
-            else:
-                logger.info(f"Found solution: {solution.get_cost().get_string()}")
-
-                # phy_result_shaper = PHYResultShaper(phy_holder)
-                # phy_result_shaper.write_solution_to_file(grasp.get_solution())
-                # phy_result_shaper.write_worst_case_delays_to_file(solution.get_cost().get_worst_case_delay_dict())
-                # phy_result_shaper.write_link_utilizations_to_file(grasp.get_solution(), graph, rate)
-                # phy_result_shaper.write_duration_map(grasp.get_duration_dict())
-                # phy_result_shaper.write_srt_unicast_candidate_list(grasp.get_srt_unicast_candidate_list())
-
-
-
-
-
