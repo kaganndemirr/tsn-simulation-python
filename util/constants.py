@@ -32,3 +32,5 @@ TT_PCP = 7
 
 GRASP = "grasp"
 ALO = "alo"
+
+ITERATION_LOG = 100

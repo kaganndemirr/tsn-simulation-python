@@ -1,16 +1,23 @@
 class Bag:
     
     def __init__(self):
+        self.log = None
         self.graph = None
         self.application_list = None
         self.tt_message_list = None
         self.path_finding_method = None
         self.algorithm = None
         self.k = None
-        self.meta_heuristic_name = None
+        self.metaheuristic_name = None
         self.max_iteration_number = None
         self.topology_name = None
         self.scenario_name = None
+
+    def get_log(self):
+        return self.log
+
+    def set_log(self, log):
+        self.log = log
 
     def get_graph(self):
         return self.graph
@@ -48,11 +55,11 @@ class Bag:
     def set_k(self, k):
         self.k = k
 
-    def get_meta_heuristic_name(self):
-        return self.meta_heuristic_name
+    def get_metaheuristic_name(self):
+        return self.metaheuristic_name
 
-    def set_meta_heuristic_name(self, meta_heuristic_name):
-        self.meta_heuristic_name = meta_heuristic_name
+    def set_metaheuristic_name(self, metaheuristic_name):
+        self.metaheuristic_name = metaheuristic_name
 
     def get_max_iteration_number(self):
         return self.max_iteration_number

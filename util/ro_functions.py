@@ -9,7 +9,7 @@ from message.message import Message, MessageCandidate
 from util.helper_functions import convert_graph_to_nx_graph, create_path_as_node_list, create_path_as_edge_list, generate_multicast_path_for_shortest_path
 from util.path_finding_functions import dijkstra_shortest_path
 
-def construct_initial_solution(non_tt_message_candidate_list, tt_message_list, evaluator):
+def construct_initial_solution(non_tt_message_candidate_list, tt_message_list, avb_latency_math):
     initial_solution = list(tt_message_list)
 
     shuffled_non_tt_message_candidate_list = list(non_tt_message_candidate_list)
@@ -23,7 +23,7 @@ def construct_initial_solution(non_tt_message_candidate_list, tt_message_list, e
             current_message = Message(message_candidate.get_application())
             current_message.set_path(candidate_path)
             initial_solution.append(current_message)
-            cost = evaluator.evaluate(initial_solution)
+            cost = avb_latency_math.evaluate(initial_solution)
             if cost.get_total_cost() < current_best_cost.get_total_cost():
                 current_best_cost = cost
                 current_best_message = current_message
@@ -102,3 +102,27 @@ def find_shortest_path_for_tt_applications(graph, application_list):
             tt_message_list.append(tt_message)
 
     return tt_message_list
+
+def set_ant_path(ant_solution, non_tt_application, ant_path):
+    for ant in ant_solution:
+        if ant.get_application() == non_tt_application:
+            ant.set_path(ant_path)
+            break
+
+def alo(ant_solution, ant_lion_solution, avb_latency_math, non_tt_message_candidate_list):
+    elite_solution = list(ant_lion_solution)
+
+    for non_tt_message_candidate in non_tt_message_candidate_list:
+        random_ant_lion_index, random_ant_index = random.sample(range(len(non_tt_message_candidate.get_candidate_path_list())), 2)
+        ant_path = non_tt_message_candidate.get_candidate_path_list()[random_ant_index]
+
+        set_ant_path(ant_solution, non_tt_message_candidate.get_application(), ant_path)
+
+    if avb_latency_math.evaluate(ant_solution).get_total_cost() < avb_latency_math.evaluate(ant_lion_solution).get_total_cost():
+        ant_lion_solution = ant_solution
+
+    if avb_latency_math.evaluate(ant_lion_solution).get_total_cost() < avb_latency_math.evaluate(elite_solution).get_total_cost():
+        elite_solution = ant_lion_solution
+
+    return elite_solution
+

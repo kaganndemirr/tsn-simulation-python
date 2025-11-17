@@ -20,7 +20,7 @@ from util.bag import Bag
 from util.helper_functions import get_topology_and_scenario_name, create_scenario_output_path, create_tsnsched_output_path, create_result_output_path
 from util.log_functions import create_info, found_solution, found_no_solution
 from util.ro_functions import find_shortest_path_for_tt_applications
-from util.output_functions import write_path_to_file, write_worst_case_delay_to_file, write_link_utilization_to_file, write_duration_to_file
+from util.output_functions import write_path_to_file, write_worst_case_delay_to_file, write_link_utilization_to_file, write_duration_to_file, write_non_tt_message_candidate_path_list_to_file
 
 from solver.shortest_path_solver import ShortestPathSolver
 from solver.metaheuristic_solver import MetaheuristicSolver
@@ -90,6 +90,7 @@ else:
     metaheuristic_name = "grasp"
 
 bag = Bag()
+bag.set_log(logger)
 
 logger.info(f"Parsing topology from {os.path.basename(topology_file)}!")
 graph = topology_parser(topology_file)
@@ -148,10 +149,10 @@ if path_finding_method == "shortest_path":
         else:
             logger.info(found_solution(solution))
 
-            write_path_to_file(scenario_output_path, shortest_path_solver.get_solution())
-            write_worst_case_delay_to_file(scenario_output_path, solution.get_cost().get_worst_case_delay_dict(), create_result_output_path(bag))
-            write_link_utilization_to_file(shortest_path_solver.get_solution(), graph, scenario_output_path, create_result_output_path(bag))
-            write_duration_to_file(shortest_path_solver.get_duration_dict(), create_result_output_path(bag))
+            write_path_to_file(bag, scenario_output_path, shortest_path_solver.get_solution())
+            write_worst_case_delay_to_file(bag, scenario_output_path, solution.get_cost().get_worst_case_delay_dict(), create_result_output_path(bag))
+            write_link_utilization_to_file(bag, shortest_path_solver.get_solution(), graph, scenario_output_path, create_result_output_path(bag))
+            write_duration_to_file(bag, shortest_path_solver.get_duration_dict(), create_result_output_path(bag))
 
 elif path_finding_method == "yen":
     metaheuristic_solver = MetaheuristicSolver()
@@ -159,7 +160,7 @@ elif path_finding_method == "yen":
     bag.set_path_finding_method(path_finding_method)
     bag.set_k(k)
     bag.set_max_iteration_number(max_iteration_number)
-    bag.set_meta_heuristic_name(metaheuristic_name)
+    bag.set_metaheuristic_name(metaheuristic_name)
 
     logger.info(f"Creating input.json for TSNsched!")
     tsnsched = TSNsched(graph, tt_message_list)
@@ -184,3 +185,17 @@ elif path_finding_method == "yen":
     solution = metaheuristic_solver.solve(bag)
 
     solution.get_cost().write_result_to_file(bag)
+
+    if solution.get_message_list() is None or len(solution.get_message_list()) == 0:
+        logger.info(constants.NO_SOLUTION_COULD_BE_FOUND)
+    else:
+        if solution.get_cost().get_total_cost() == float('inf'):
+            logger.info(found_no_solution(solution))
+        else:
+            logger.info(found_solution(solution))
+
+            write_path_to_file(bag, scenario_output_path, metaheuristic_solver.get_solution())
+            write_worst_case_delay_to_file(bag, scenario_output_path, solution.get_cost().get_worst_case_delay_dict(), create_result_output_path(bag))
+            write_link_utilization_to_file(bag, metaheuristic_solver.get_solution(), graph, scenario_output_path, create_result_output_path(bag))
+            write_duration_to_file(bag, metaheuristic_solver.get_duration_dict(), create_result_output_path(bag))
+            write_non_tt_message_candidate_path_list_to_file(bag, scenario_output_path, metaheuristic_solver.get_non_tt_message_candidate_list())
