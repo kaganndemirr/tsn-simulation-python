@@ -3,7 +3,6 @@ import logging
 import os
 import json
 
-
 from util import constants
 
 from parser.application_parser import application_parser
@@ -26,19 +25,14 @@ from solver.shortest_path_solver import ShortestPathSolver
 from solver.metaheuristic_solver import MetaheuristicSolver
 
 parser = argparse.ArgumentParser(prog='tsn_simulation')
-parser.add_argument('-topology', help="Use given file as topology", type=str)
-parser.add_argument('-scenario', help="Use given file as scenario", type=str)
-parser.add_argument('-cmi', help="CMI value for SRT Applications", type=str)
+parser.add_argument('-topology', help="Use given file as topology")
+parser.add_argument('-scenario', help="Use given file as scenario")
+parser.add_argument('-cmi', help="CMI value for SRT Applications", default=constants.DEFAULT_CMI)
 
-parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", type=int)
-parser.add_argument('-max_iteration_number', help="Max Iteration Number (Default: 1000)", type=int)
+parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", default=constants.DEFAULT_K)
+parser.add_argument('-max_iteration_number', help="Max Iteration Number (Default: 1000)", default=constants.DEFAULT_MAX_ITERATION_NUMBER)
 
-parser.add_argument('-path_finding_method', help="Choose path finder method (Default = yen) (Choices: shortestPath, yen)", type=str)
-parser.add_argument('-algorithm', help="Choose algorithm for shortestPath (Default = dijkstra) (Choices: dijkstra)", type=str)
-
-parser.add_argument('-log', help="Log Type (Default: info) (Choices: info, debug)", type=str)
-parser.add_argument('-metaheuristic_name', help="Which metaheuristic runs (Default: GRASP) (Choices: GRASP, ALO)", type=str)
-
+parser.add_argument('-path_finding_method', help="Choose path finder method (Default = yen) (Choices: shortestPath, yen)", default=constants.YEN)
 
 args = parser.parse_args()
 
@@ -46,66 +40,27 @@ topology_file = args.topology
 scenario_file = args.scenario
 
 avb_latency_math = AVBLatencyMath()
-
-if args.cmi:
-    cmi = args.cmi
-else:
-    cmi = 125
-
-if args.k:
-    k = args.k
-else:
-    k = 50
-
-if args.max_iteration_number:
-    max_iteration_number = args.max_iteration_number
-else:
-    max_iteration_number = 1000
-
-if args.path_finding_method:
-    path_finding_method = args.path_finding_method
-else:
-    path_finding_method = "yen"
-
-if args.algorithm:
-    algorithm = args.algorithm
-else:
-    algorithm = "dijkstra"
-
-if args.log:
-    if args.log == constants.INFO:
-        logging.basicConfig(level=logging.INFO)
-
-    elif args.log == constants.DEBUG:
-        logging.basicConfig(level=logging.DEBUG)
-
-else:
-    logging.basicConfig(level=logging.INFO)
-
-logger = logging.getLogger()
-
-if args.metaheuristic_name:
-    metaheuristic_name = args.metaheuristic_name
-else:
-    metaheuristic_name = "grasp"
+cmi = args.cmi
+k = args.k
+max_iteration_number = args.max_iteration_number
+path_finding_method = args.path_finding_method
 
 bag = Bag()
-bag.set_log(logger)
 
-logger.info(f"Parsing topology from {os.path.basename(topology_file)}!")
+print(f"Parsing topology from {os.path.basename(topology_file)}!")
 graph = topology_parser(topology_file)
 bag.set_graph(graph)
-logger.info(f"Topology successfully parsed {os.path.basename(topology_file)}!")
+print(f"Topology successfully parsed {os.path.basename(topology_file)}!")
 
-logger.info(f"Parsing application from {os.path.basename(scenario_file)}!")
+print(f"Parsing application from {os.path.basename(scenario_file)}!")
 application_list = application_parser(scenario_file, graph, cmi)
 bag.set_application_list(application_list)
-logger.info(f"Application successfully parsed {os.path.basename(scenario_file)}!")
+print(f"Application successfully parsed {os.path.basename(scenario_file)}!")
 
-logger.info(f"Finding shortest paths for TT Applications!")
+print(f"Finding shortest paths for TT Applications!")
 tt_message_list = find_shortest_path_for_tt_applications(graph, application_list)
 bag.set_tt_message_list(tt_message_list)
-logger.info(f"Finding shortest paths successfully for TT Applications!")
+print(f"Finding shortest paths successfully for TT Applications!")
 
 topology_name, scenario_name = get_topology_and_scenario_name(topology_file, scenario_file)
 bag.set_topology_name(topology_name)
@@ -115,9 +70,8 @@ if path_finding_method == "shortest_path":
     shortest_path_solver = ShortestPathSolver()
 
     bag.set_path_finding_method(path_finding_method)
-    bag.set_algorithm(algorithm)
 
-    logger.info(f"Creating input.json for TSNsched!")
+    print(f"Creating input.json for TSNsched!")
     tsnsched = TSNsched(graph, tt_message_list)
     tsnsched_json = TSNschedInputJson(tsnsched)
     tsnsched_dict = tsnsched_json.to_dict()
@@ -125,29 +79,29 @@ if path_finding_method == "shortest_path":
     tsnsched_output_path = create_tsnsched_output_path(scenario_output_path)
     with open(os.path.join(tsnsched_output_path, "input.json"), "w", encoding="utf-8") as f:
         json.dump(tsnsched_dict, f, ensure_ascii=False, indent=2)
-    logger.info(f"input.json created successfully!")
+    print(f"input.json created successfully!")
 
-    logger.info(f"Running TSNsched!")
+    print(f"Running TSNsched!")
     run_tsnsched(tsnsched_output_path)
-    logger.info(f"Schedule generated!")
+    print(f"Schedule generated!")
 
-    logger.info(f"GCL deploying to Edges!")
+    print(f"GCL deploying to Edges!")
     parse_output_json(tsnsched_output_path, graph)
-    logger.info(f"GCL successfully deployed to Edges!")
+    print(f"GCL successfully deployed to Edges!")
 
-    logger.info(create_info(bag))
+    print(create_info(bag))
 
     solution = shortest_path_solver.solve(bag)
 
     solution.get_cost().write_result_to_file(bag)
 
     if solution.get_message_list() is None or len(solution.get_message_list()) == 0:
-        logger.info(constants.NO_SOLUTION_COULD_BE_FOUND)
+        print(constants.NO_SOLUTION_COULD_BE_FOUND)
     else:
         if solution.get_cost().get_total_cost() == float('inf'):
-            logger.info(found_no_solution(solution))
+            print(found_no_solution(solution))
         else:
-            logger.info(found_solution(solution))
+            print(found_solution(solution))
 
             write_path_to_file(bag, scenario_output_path, shortest_path_solver.get_solution())
             write_worst_case_delay_to_file(bag, scenario_output_path, solution.get_cost().get_worst_case_delay_dict(), create_result_output_path(bag))
@@ -160,9 +114,8 @@ elif path_finding_method == "yen":
     bag.set_path_finding_method(path_finding_method)
     bag.set_k(k)
     bag.set_max_iteration_number(max_iteration_number)
-    bag.set_metaheuristic_name(metaheuristic_name)
 
-    logger.info(f"Creating input.json for TSNsched!")
+    print(f"Creating input.json for TSNsched!")
     tsnsched = TSNsched(graph, tt_message_list)
     tsnsched_json = TSNschedInputJson(tsnsched)
     tsnsched_dict = tsnsched_json.to_dict()
@@ -170,29 +123,29 @@ elif path_finding_method == "yen":
     tsnsched_output_path = create_tsnsched_output_path(scenario_output_path)
     with open(os.path.join(tsnsched_output_path, "input.json"), "w", encoding="utf-8") as f:
         json.dump(tsnsched_dict, f, ensure_ascii=False, indent=2)
-    logger.info(f"input.json created successfully!")
+    print(f"input.json created successfully!")
 
-    logger.info(f"Running TSNsched!")
+    print(f"Running TSNsched!")
     run_tsnsched(tsnsched_output_path)
-    logger.info(f"Schedule generated!")
+    print(f"Schedule generated!")
 
-    logger.info(f"GCL deploying to Edges!")
+    print(f"GCL deploying to Edges!")
     parse_output_json(tsnsched_output_path, graph)
-    logger.info(f"GCL successfully deployed to Edges!")
+    print(f"GCL successfully deployed to Edges!")
 
-    logger.info(create_info(bag))
+    print(create_info(bag))
 
     solution = metaheuristic_solver.solve(bag)
 
     solution.get_cost().write_result_to_file(bag)
 
     if solution.get_message_list() is None or len(solution.get_message_list()) == 0:
-        logger.info(constants.NO_SOLUTION_COULD_BE_FOUND)
+        print(constants.NO_SOLUTION_COULD_BE_FOUND)
     else:
         if solution.get_cost().get_total_cost() == float('inf'):
-            logger.info(found_no_solution(solution))
+            print(found_no_solution(solution))
         else:
-            logger.info(found_solution(solution))
+            print(found_solution(solution))
 
             write_path_to_file(bag, scenario_output_path, metaheuristic_solver.get_solution())
             write_worst_case_delay_to_file(bag, scenario_output_path, solution.get_cost().get_worst_case_delay_dict(), create_result_output_path(bag))

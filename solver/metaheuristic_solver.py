@@ -8,7 +8,7 @@ from path_finding.k_shortest_path import KShortestPath
 from solver.solution import Solution
 
 from util import constants
-from util.ro_functions import construct_initial_solution, grasp, alo
+from util.ro_functions import construct_initial_solution, grasp
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,14 +24,8 @@ class MetaheuristicSolver:
     def run_meta_heuristic(self, bag, avb_latency_math, k_shortest_path_time):
         metaheuristic_start_time = time.time()
 
-        solution = list()
-        if bag.get_metaheuristic_name() == constants.GRASP:
-            initial_solution = construct_initial_solution(self.non_tt_message_candidate_list, bag.get_tt_message_list(), avb_latency_math)
-            solution = grasp(initial_solution, avb_latency_math, self.non_tt_message_candidate_list, self.best_cost)
-        elif bag.get_metaheuristic_name() == constants.ALO:
-            ant_solution = construct_initial_solution(self.non_tt_message_candidate_list, bag.get_tt_message_list(),avb_latency_math)
-            ant_lion_solution = construct_initial_solution(self.non_tt_message_candidate_list, bag.get_tt_message_list(), avb_latency_math)
-            solution = alo(ant_solution, ant_lion_solution, avb_latency_math, self.non_tt_message_candidate_list)
+        initial_solution = construct_initial_solution(self.non_tt_message_candidate_list, bag.get_tt_message_list(),avb_latency_math)
+        solution = grasp(initial_solution, avb_latency_math, self.non_tt_message_candidate_list, self.best_cost)
 
         cost = avb_latency_math.evaluate(solution)
 
@@ -58,7 +52,7 @@ class MetaheuristicSolver:
             self.run_meta_heuristic(bag, avb_latency_math, k_shortest_path_time)
 
             if iteration % constants.ITERATION_LOG == 0:
-                logger.info(f"Iteration {iteration}, CurrentBest {self.best_cost.get_string()}")
+                print(f"Iteration {iteration}, CurrentBest {self.best_cost.get_string()}")
 
 
         return Solution(self. best_cost, self.best_solution)

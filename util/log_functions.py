@@ -7,8 +7,6 @@ def create_info(bag):
         result += ", Algorithm: " + bag.get_algorithm()
     if bag.get_k() is not None:
         result += ", K: " + str(bag.get_k())
-    if bag.get_metaheuristic_name() is not None:
-        result += ", MetaheuristicName: " + bag.get_metaheuristic_name()
     if bag.get_max_iteration_number() is not None:
         result += ", Max Iteration Number: " + str(bag.get_max_iteration_number())
     return result

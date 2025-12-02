@@ -22,7 +22,7 @@ def write_path_to_file(bag, scenario_output_path, solution):
             if isinstance(message.get_application(), TTApplication):
                 path_writer.write(message.get_application().get_name() + "\t" + str(message.get_path()) + "\n")
 
-    bag.get_log().info(create_path_info(scenario_output_path))
+    print(create_path_info(scenario_output_path))
 
 def write_worst_case_delay_to_file(bag, scenario_output_path, worst_case_delay_dict, result_output_path):
 
@@ -49,8 +49,8 @@ def write_worst_case_delay_to_file(bag, scenario_output_path, worst_case_delay_d
         result_writer.write("Average WCD\t" + str(mean) + "\t" + "Variance\t" + str(variance) + "\t" + "Standard Deviation\t" + str(standard_deviation) + "\n")
 
 
-    bag.get_log().info(create_worst_case_delay_scenario_info(scenario_output_path))
-    bag.get_log().info(create_worst_case_delay_result_info(result_output_path))
+    print(create_worst_case_delay_scenario_info(scenario_output_path))
+    print(create_worst_case_delay_result_info(result_output_path))
 
 def write_link_utilization_to_file(bag, solution, graph, scenario_output_path, result_output_path):
     utilization_dict = dict()
@@ -128,9 +128,9 @@ def write_link_utilization_to_file(bag, solution, graph, scenario_output_path, r
         results_writer.write("Variance\t" + str(variance) + ",\t")
         results_writer.write("Standard Deviation\t" + str(standard_deviation) + "\n")
 
-    bag.get_log().info(create_link_utilizations_sorted_by_name_info(scenario_output_path))
-    bag.get_log().info(create_link_utilizations_sorted_by_utilizations_info(scenario_output_path))
-    bag.get_log().info(create_link_utilizations_result_info(result_output_path))
+    print(create_link_utilizations_sorted_by_name_info(scenario_output_path))
+    print(create_link_utilizations_sorted_by_utilizations_info(scenario_output_path))
+    print(create_link_utilizations_result_info(result_output_path))
 
 def write_duration_to_file(bag, duration_dict, result_output_path):
     sorted_duration_dict = dict(sorted(duration_dict.items(), key=lambda item: item[0], reverse=True))
@@ -138,7 +138,7 @@ def write_duration_to_file(bag, duration_dict, result_output_path):
     with open(os.path.join(result_output_path, "results.txt"), "a") as results_writer:
         results_writer.write("Costs and computation times(sec)\t" + str(sorted_duration_dict) + "\n")
 
-    bag.get_log().info(create_duration_info(result_output_path))
+    print(create_duration_info(result_output_path))
 
 def write_non_tt_message_candidate_path_list_to_file(bag, scenario_output_path, non_tt_message_candidate_list):
     with open(os.path.join(scenario_output_path, "non_tt_message_candidate_paths.txt"), "w") as non_tt_message_candidate_paths_writer:
@@ -148,4 +148,4 @@ def write_non_tt_message_candidate_path_list_to_file(bag, scenario_output_path, 
                 non_tt_message_candidate_paths_writer.write(non_tt_message_candidate.get_application().get_name() + "_" + str(candidate_path_index) + "\t" + str(candidate_path) + "\n")
                 candidate_path_index += 1
 
-    bag.get_log().info(create_non_tt_candidate_paths_info(scenario_output_path))
+    print(create_non_tt_candidate_paths_info(scenario_output_path))

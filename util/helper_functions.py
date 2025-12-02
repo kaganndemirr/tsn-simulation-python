@@ -118,8 +118,6 @@ def create_result_output_path(bag):
         result_list.append("Algorithm=" + bag.get_algorithm())
     if bag.get_k() is not None:
         result_list.append("K=" + str(bag.get_k()))
-    if bag.get_metaheuristic_name() is not None:
-        result_list.append("MetaheuristicName=" + bag.get_metaheuristic_name())
 
     result_output_path = Path(*result_list)
 

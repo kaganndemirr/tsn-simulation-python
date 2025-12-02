@@ -103,26 +103,3 @@ def find_shortest_path_for_tt_applications(graph, application_list):
 
     return tt_message_list
 
-def set_ant_path(ant_solution, non_tt_application, ant_path):
-    for ant in ant_solution:
-        if ant.get_application() == non_tt_application:
-            ant.set_path(ant_path)
-            break
-
-def alo(ant_solution, ant_lion_solution, avb_latency_math, non_tt_message_candidate_list):
-    elite_solution = list(ant_lion_solution)
-
-    for non_tt_message_candidate in non_tt_message_candidate_list:
-        random_ant_lion_index, random_ant_index = random.sample(range(len(non_tt_message_candidate.get_candidate_path_list())), 2)
-        ant_path = non_tt_message_candidate.get_candidate_path_list()[random_ant_index]
-
-        set_ant_path(ant_solution, non_tt_message_candidate.get_application(), ant_path)
-
-    if avb_latency_math.evaluate(ant_solution).get_total_cost() < avb_latency_math.evaluate(ant_lion_solution).get_total_cost():
-        ant_lion_solution = ant_solution
-
-    if avb_latency_math.evaluate(ant_lion_solution).get_total_cost() < avb_latency_math.evaluate(elite_solution).get_total_cost():
-        elite_solution = ant_lion_solution
-
-    return elite_solution
-
