@@ -3,7 +3,7 @@ class Bag:
     def __init__(self):
         self.graph = None
         self.application_list = None
-        self.tt_message_list = None
+        self.tt_flow_list = None
         self.path_finding_method = None
         self.algorithm = None
         self.k = None

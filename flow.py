@@ -1,4 +1,4 @@
-class Message:
+class Flow:
     def __init__(self, application):
         self.application = application
         self.path = None
@@ -7,7 +7,7 @@ class Message:
         return f"App: {self.application} Path: {self.path}"
 
     def __eq__(self, other):
-        if isinstance(other, Message):
+        if isinstance(other, Flow):
             return self.application == other.application and self.path == other.path
         return False
 
@@ -15,7 +15,7 @@ class Message:
         return hash(self.application) + hash(str(self.path))
 
 
-class MessageCandidate:
+class FlowCandidate:
     def __init__(self, application):
         self.application = application
         self.candidate_path_list = None
@@ -24,7 +24,7 @@ class MessageCandidate:
         return f"App: {self.application} Candidate Path List: {self.candidate_path_list}"
 
     def __eq__(self, other):
-        if isinstance(other, MessageCandidate):
+        if isinstance(other, FlowCandidate):
             return self.application == other.application and self.candidate_path_list == other.candidate_path_list
         return False
 

@@ -10,8 +10,8 @@ class Graph:
     def add_node(self, node):
         self.node_list.append(node)
 
-    def add_edge(self, source, target, rate, non_tt_idle_slope, weight):
-        edge = Edge(source, target, rate, non_tt_idle_slope, weight)
+    def add_edge(self, source, target, rate, srt_idle_slope, weight):
+        edge = Edge(source, target, rate, srt_idle_slope, weight)
         self.edge_list.append(edge)
 
     def get_node(self, name):

@@ -1,5 +1,5 @@
 <Applications>
-    <NonTTApplication>
+    <SRTApplication>
         <Name>APP_1</Name>
         <FrameSize>1500</FrameSize>
         <NumberOfFrames>1</NumberOfFrames>
@@ -10,9 +10,9 @@
                 <Name>ES406</Name>
             </Target>
         </Targets>
-    </NonTTApplication>
+    </SRTApplication>
 
-    <NonTTApplication>
+    <SRTApplication>
         <Name>APP_2</Name>
         <FrameSize>1500</FrameSize>
         <NumberOfFrames>10</NumberOfFrames>
@@ -23,9 +23,9 @@
                 <Name>ES418</Name>
             </Target>
         </Targets>
-    </NonTTApplication>
+    </SRTApplication>
 
-    <NonTTApplication>
+    <SRTApplication>
         <Name>APP_3</Name>
         <FrameSize>1500</FrameSize>
         <NumberOfFrames>1</NumberOfFrames>
@@ -39,9 +39,9 @@
                 <Name>ES410</Name>
             </Target>
         </Targets>
-    </NonTTApplication>
+    </SRTApplication>
 
-    <NonTTApplication>
+    <SRTApplication>
         <Name>APP_4</Name>
         <FrameSize>1500</FrameSize>
         <NumberOfFrames>1</NumberOfFrames>
@@ -55,7 +55,7 @@
                 <Name>ES418</Name>
             </Target>
         </Targets>
-    </NonTTApplication>
+    </SRTApplication>
 
     <TTApplication>
         <Name>APP_5</Name>
@@ -159,7 +159,7 @@
         </Targets>
     </TTApplication>
 
-    <!-- I think TSNsched does not support multicast messages yet! -->
+    <!-- I think TSNsched does not support multicast flows yet! -->
 
 <!--    <TTApplication>-->
 <!--        <Name>APP_7</Name>-->

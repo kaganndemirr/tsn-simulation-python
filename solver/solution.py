@@ -1,4 +1,4 @@
 class Solution:
-    def __init__(self, cost, message_list):
+    def __init__(self, cost, flow_list):
         self.cost = cost
-        self.message_list = message_list
+        self.flow_list = flow_list

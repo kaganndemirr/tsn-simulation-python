@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as Et
 
-from application import NonTTApplication, TTApplication
+from application import SRTApplication, TTApplication
 
 from util.helper_functions import compute_mbps, create_path_as_list, create_path_as_edge_list
 
@@ -11,15 +11,15 @@ def application_parser(app_file, graph, cmi):
     tree = Et.parse(app_file)
     root = tree.getroot()
 
-    for non_tt_app in root.findall('NonTTApplication'):
-        name = non_tt_app.find('Name').text
-        deadline = int(non_tt_app.find('Deadline').text)
-        frame_size_byte = int(non_tt_app.find('FrameSize').text)
-        number_of_frames = int(non_tt_app.find('NumberOfFrames').text)
-        message_size_byte = frame_size_byte * number_of_frames
-        message_size_mbps = compute_mbps(message_size_byte, cmi)
-        source = graph.get_node(non_tt_app.find('Source').text)
-        target_element_list = non_tt_app.find('Targets').findall('Target')
+    for srt_app in root.findall('SRTApplication'):
+        name = srt_app.find('Name').text
+        deadline = int(srt_app.find('Deadline').text)
+        frame_size_byte = int(srt_app.find('FrameSize').text)
+        number_of_frames = int(srt_app.find('NumberOfFrames').text)
+        flow_size_byte = frame_size_byte * number_of_frames
+        flow_size_mbps = compute_mbps(flow_size_byte, cmi)
+        source = graph.get_node(srt_app.find('Source').text)
+        target_element_list = srt_app.find('Targets').findall('Target')
 
         target_list = list()
         explicit_path_list = list()
@@ -36,7 +36,7 @@ def application_parser(app_file, graph, cmi):
                 explicit_path_list.append(path_as_edge_list)
 
 
-        application_list.append(NonTTApplication(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, explicit_path_list))
+        application_list.append(SRTApplication(name, cmi, deadline, frame_size_byte, number_of_frames, flow_size_byte, flow_size_mbps, source, target_list, explicit_path_list))
 
     for tt_app in root.findall('TTApplication'):
         name = tt_app.find('Name').text
@@ -44,8 +44,8 @@ def application_parser(app_file, graph, cmi):
         deadline = int(tt_app.find('Deadline').text)
         frame_size_byte = int(tt_app.find('FrameSize').text)
         number_of_frames = int(tt_app.find('NumberOfFrames').text)
-        message_size_byte = frame_size_byte * number_of_frames
-        message_size_mbps = compute_mbps(message_size_byte, cmi)
+        flow_size_byte = frame_size_byte * number_of_frames
+        flow_size_mbps = compute_mbps(flow_size_byte, cmi)
         source = graph.get_node(tt_app.find('Source').text)
         target_element_list = tt_app.find('Targets').findall('Target')
 
@@ -63,6 +63,6 @@ def application_parser(app_file, graph, cmi):
                 path_as_edge_list = create_path_as_edge_list(path_as_list, graph)
                 explicit_path_list.append(path_as_edge_list)
 
-        application_list.append(TTApplication(name, cmi, deadline, frame_size_byte, number_of_frames, message_size_byte, message_size_mbps, source, target_list, explicit_path_list))
+        application_list.append(TTApplication(name, cmi, deadline, frame_size_byte, number_of_frames, flow_size_byte, flow_size_mbps, source, target_list, explicit_path_list))
 
     return application_list

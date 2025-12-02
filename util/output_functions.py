@@ -3,24 +3,24 @@ import os
 
 from natsort import natsorted
 
-from application import NonTTApplication, TTApplication
+from application import SRTApplication, TTApplication
 
-from util.log_functions import create_path_info, create_worst_case_delay_scenario_info, create_worst_case_delay_result_info, create_link_utilizations_sorted_by_name_info, create_link_utilizations_sorted_by_utilizations_info, create_link_utilizations_result_info, create_duration_info, create_non_tt_candidate_paths_info
+from util.log_functions import create_path_info, create_worst_case_delay_scenario_info, create_worst_case_delay_result_info, create_link_utilizations_sorted_by_name_info, create_link_utilizations_sorted_by_utilizations_info, create_link_utilizations_result_info, create_duration_info, create_srt_candidate_paths_info
 
 
-def write_path_to_file(bag, scenario_output_path, solution):
+def write_path_to_file(scenario_output_path, solution):
     with open(os.path.join(scenario_output_path, "paths.txt"), "w") as path_writer:
-        path_writer.write("Non TT Messages\n")
-        for message in solution:
-            if isinstance(message.application, NonTTApplication):
-                path_writer.write(message.application.name + "\t" + str(message.path) + "\n")
+        path_writer.write("SRT Messages\n")
+        for flow in solution:
+            if isinstance(flow.application, SRTApplication):
+                path_writer.write(flow.application.name + "\t" + str(flow.path) + "\n")
 
         path_writer.write("\n")
 
         path_writer.write("TT Messages\n")
-        for message in solution:
-            if isinstance(message.application, TTApplication):
-                path_writer.write(message.application.name + "\t" + str(message.path) + "\n")
+        for flow in solution:
+            if isinstance(flow.application, TTApplication):
+                path_writer.write(flow.application.name + "\t" + str(flow.path) + "\n")
 
     print(create_path_info(scenario_output_path))
 
@@ -28,15 +28,15 @@ def write_worst_case_delay_to_file(scenario_output_path, worst_case_delay_dict, 
 
     with open(os.path.join(scenario_output_path, "worst_case_delays.txt"), "w") as worst_case_delays_writer:
         total = 0
-        for message, worst_case_delay in worst_case_delay_dict.items():
+        for flow, worst_case_delay in worst_case_delay_dict.items():
             total += worst_case_delay
-            worst_case_delays_writer.write(message.application.name + "\t" + str(message.application.deadline) + "\t" + str(worst_case_delay) + "\n")
+            worst_case_delays_writer.write(flow.application.name + "\t" + str(flow.application.deadline) + "\t" + str(worst_case_delay) + "\n")
 
         mean = total / len(worst_case_delay_dict)
         worst_case_delays_writer.write("Average WCD\t" + str(mean) + ",\t")
 
         variance = 0
-        for message, worst_case_delay in worst_case_delay_dict.items():
+        for flow, worst_case_delay in worst_case_delay_dict.items():
             variance += math.pow((worst_case_delay - mean), 2)
 
         variance /= len(worst_case_delay_dict)
@@ -54,12 +54,12 @@ def write_worst_case_delay_to_file(scenario_output_path, worst_case_delay_dict, 
 
 def write_link_utilization_to_file(solution, graph, scenario_output_path, result_output_path):
     utilization_dict = dict()
-    for message in solution:
-        for edge in message.path:
+    for flow in solution:
+        for edge in flow.path:
             if edge not in utilization_dict.keys():
                 utilization_dict[edge] = 0
             else:
-                utilization_dict[edge] += message.application.message_size_mbps / edge.rate
+                utilization_dict[edge] += flow.application.flow_size_mbps / edge.rate
 
     unused_link_number = len(graph.edge_list) - len(utilization_dict)
 
@@ -140,12 +140,12 @@ def write_duration_to_file(duration_dict, result_output_path):
 
     print(create_duration_info(result_output_path))
 
-def write_non_tt_message_candidate_path_list_to_file(scenario_output_path, non_tt_message_candidate_list):
-    with open(os.path.join(scenario_output_path, "non_tt_message_candidate_paths.txt"), "w") as non_tt_message_candidate_paths_writer:
-        for non_tt_message_candidate in non_tt_message_candidate_list:
+def write_srt_flow_candidate_path_list_to_file(scenario_output_path, srt_flow_candidate_list):
+    with open(os.path.join(scenario_output_path, "srt_flow_candidate_paths.txt"), "w") as srt_flow_candidate_paths_writer:
+        for srt_flow_candidate in srt_flow_candidate_list:
             candidate_path_index = 1
-            for candidate_path in non_tt_message_candidate.candidate_path_list:
-                non_tt_message_candidate_paths_writer.write(non_tt_message_candidate.application.name + "_" + str(candidate_path_index) + "\t" + str(candidate_path) + "\n")
+            for candidate_path in srt_flow_candidate.candidate_path_list:
+                srt_flow_candidate_paths_writer.write(srt_flow_candidate.application.name + "_" + str(candidate_path_index) + "\t" + str(candidate_path) + "\n")
                 candidate_path_index += 1
 
-    print(create_non_tt_candidate_paths_info(scenario_output_path))
+    print(create_srt_candidate_paths_info(scenario_output_path))

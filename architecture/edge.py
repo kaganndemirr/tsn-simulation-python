@@ -1,9 +1,9 @@
 class Edge:
-    def __init__(self, source, target, rate, non_tt_idle_slope, weight):
+    def __init__(self, source, target, rate, srt_idle_slope, weight):
         self.source = source
         self.target = target
         self.rate = rate
-        self.non_tt_idle_slope = non_tt_idle_slope
+        self.srt_idle_slope = srt_idle_slope
         self.weight = weight
         self.gcl = None
 

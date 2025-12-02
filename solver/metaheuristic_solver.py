@@ -16,13 +16,13 @@ class MetaheuristicSolver:
         self.best_cost = AVBLatencyMathCost()
         self.best_solution = list()
         self.duration_dict = dict()
-        self.non_tt_message_candidate_list = None
+        self.srt_flow_candidate_list = None
 
     def run_meta_heuristic(self, bag, avb_latency_math, k_shortest_path_time):
         metaheuristic_start_time = time.time()
 
-        initial_solution = construct_initial_solution(self.non_tt_message_candidate_list, bag.tt_message_list, avb_latency_math)
-        solution = grasp(initial_solution, avb_latency_math, self.non_tt_message_candidate_list, self.best_cost)
+        initial_solution = construct_initial_solution(self.srt_flow_candidate_list, bag.tt_flow_list, avb_latency_math)
+        solution = grasp(initial_solution, avb_latency_math, self.srt_flow_candidate_list, self.best_cost)
 
         cost = avb_latency_math.evaluate(solution)
 
@@ -41,7 +41,7 @@ class MetaheuristicSolver:
 
         k_shortest_path_time = k_shortest_paths_end - k_shortest_paths_start
 
-        self.non_tt_message_candidate_list = k_shortest_paths.get_non_tt_message_candidate_list()
+        self.srt_flow_candidate_list = k_shortest_paths.get_srt_flow_candidate_list()
 
         avb_latency_math = AVBLatencyMath()
 
@@ -61,6 +61,6 @@ class MetaheuristicSolver:
     def get_duration_dict(self):
         return self.duration_dict
 
-    def get_non_tt_message_candidate_list(self):
-        return self.non_tt_message_candidate_list
+    def get_srt_flow_candidate_list(self):
+        return self.srt_flow_candidate_list
 

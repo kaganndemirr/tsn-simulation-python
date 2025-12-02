@@ -38,8 +38,8 @@ def create_link_utilizations_result_info(result_output_path):
 def create_duration_info(result_output_path):
     return f"Costs and computation times written to {os.path.join(result_output_path, "Results.txt")} file."
 
-def create_non_tt_candidate_paths_info(scenario_output_path):
-    return f"Non TT message candidate paths written to {os.path.join(scenario_output_path, "non_tt_message_candidate_paths.txt")} file."
+def create_srt_candidate_paths_info(scenario_output_path):
+    return f"SRT flow candidate paths written to {os.path.join(scenario_output_path, "srt_flow_candidate_paths.txt")} file."
 
 
 

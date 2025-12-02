@@ -19,7 +19,7 @@ from util.bag import Bag
 from util.helper_functions import get_topology_and_scenario_name, create_scenario_output_path, create_tsnsched_output_path, create_result_output_path
 from util.log_functions import create_info, found_solution, found_no_solution
 from util.ro_functions import find_shortest_path_for_tt_applications
-from util.output_functions import write_path_to_file, write_worst_case_delay_to_file, write_link_utilization_to_file, write_duration_to_file, write_non_tt_message_candidate_path_list_to_file
+from util.output_functions import write_path_to_file, write_worst_case_delay_to_file, write_link_utilization_to_file, write_duration_to_file, write_srt_flow_candidate_path_list_to_file
 
 from solver.shortest_path_solver import ShortestPathSolver
 from solver.metaheuristic_solver import MetaheuristicSolver
@@ -28,7 +28,7 @@ parser = argparse.ArgumentParser(prog='tsn_simulation')
 parser.add_argument('-topology', help="Use given file as topology")
 parser.add_argument('-scenario', help="Use given file as scenario")
 parser.add_argument('-rate', help="Edge rate (Default: 1000 mbps)", default=constants.DEFAULT_RATE, type=int)
-parser.add_argument('-non_tt_idle_slope', help="Non TT Queue Idle Slope (Default: 0.75)", default=constants.DEFAULT_NON_TT_IDLE_SLOPE, type=float)
+parser.add_argument('-srt_idle_slope', help="SRT Queue Idle Slope (Default: 0.75)", default=constants.DEFAULT_NON_TT_IDLE_SLOPE, type=float)
 parser.add_argument('-cmi', help="CMI value for SRT Applications (Default: 125)", default=constants.DEFAULT_CMI, type=float)
 
 parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", default=constants.DEFAULT_K, type=int)
@@ -42,7 +42,7 @@ topology_file = args.topology
 scenario_file = args.scenario
 
 rate = args.rate
-non_tt_idle_slope = args.non_tt_idle_slope
+srt_idle_slope = args.srt_idle_slope
 cmi = args.cmi
 k = args.k
 path_finding_method = args.path_finding_method
@@ -53,7 +53,7 @@ avb_latency_math = AVBLatencyMath()
 bag = Bag()
 
 print(f"Parsing topology from {os.path.basename(topology_file)}!")
-graph = topology_parser(topology_file, rate, non_tt_idle_slope)
+graph = topology_parser(topology_file, rate, srt_idle_slope)
 bag.graph = graph
 print(f"Topology successfully parsed {os.path.basename(topology_file)}!")
 
@@ -63,8 +63,8 @@ bag.application_list = application_list
 print(f"Application successfully parsed {os.path.basename(scenario_file)}!")
 
 print(f"Finding shortest paths for TT Applications!")
-tt_message_list = find_shortest_path_for_tt_applications(graph, application_list)
-bag.tt_message_list = tt_message_list
+tt_flow_list = find_shortest_path_for_tt_applications(graph, application_list)
+bag.tt_flow_list = tt_flow_list
 print(f"Finding shortest paths successfully for TT Applications!")
 
 topology_name, scenario_name = get_topology_and_scenario_name(topology_file, scenario_file)
@@ -74,10 +74,10 @@ bag.scenario_name = scenario_name
 if path_finding_method == "shortest_path":
     shortest_path_solver = ShortestPathSolver()
 
-    bag.set_path_finding_method(path_finding_method)
+    bag.path_finding_method = path_finding_method
 
     print(f"Creating input.json for TSNsched!")
-    tsnsched = TSNsched(graph, tt_message_list)
+    tsnsched = TSNsched(graph, tt_flow_list)
     tsnsched_json = TSNschedInputJson(tsnsched)
     tsnsched_dict = tsnsched_json.to_dict()
     scenario_output_path = create_scenario_output_path(bag)
@@ -100,7 +100,7 @@ if path_finding_method == "shortest_path":
 
     solution.get_cost().write_result_to_file(bag)
 
-    if solution.get_message_list() is None or len(solution.get_message_list()) == 0:
+    if solution.get_flow_list() is None or len(solution.get_flow_list()) == 0:
         print(constants.NO_SOLUTION_COULD_BE_FOUND)
     else:
         if solution.get_cost().get_total_cost() == float('inf'):
@@ -108,10 +108,10 @@ if path_finding_method == "shortest_path":
         else:
             print(found_solution(solution))
 
-            write_path_to_file(bag, scenario_output_path, shortest_path_solver.get_solution())
-            write_worst_case_delay_to_file(bag, scenario_output_path, solution.get_cost().get_worst_case_delay_dict(), create_result_output_path(bag))
-            write_link_utilization_to_file(bag, shortest_path_solver.get_solution(), graph, scenario_output_path, create_result_output_path(bag))
-            write_duration_to_file(bag, shortest_path_solver.get_duration_dict(), create_result_output_path(bag))
+            write_path_to_file(scenario_output_path, shortest_path_solver.solution)
+            write_worst_case_delay_to_file(scenario_output_path, solution.cost.get_worst_case_delay_dict(), create_result_output_path(bag))
+            write_link_utilization_to_file(shortest_path_solver.solution, graph, scenario_output_path, create_result_output_path(bag))
+            write_duration_to_file(shortest_path_solver.duration_dict, create_result_output_path(bag))
 
 elif path_finding_method == "yen":
     metaheuristic_solver = MetaheuristicSolver()
@@ -121,7 +121,7 @@ elif path_finding_method == "yen":
     bag.max_iteration_number = max_iteration_number
 
     print(f"Creating input.json for TSNsched!")
-    tsnsched = TSNsched(graph, tt_message_list)
+    tsnsched = TSNsched(graph, tt_flow_list)
     tsnsched_json = TSNschedInputJson(tsnsched)
     tsnsched_dict = tsnsched_json.to_dict()
     scenario_output_path = create_scenario_output_path(bag)
@@ -144,7 +144,7 @@ elif path_finding_method == "yen":
 
     solution.cost.write_result_to_file(bag)
 
-    if solution.message_list is None or len(solution.message_list) == 0:
+    if solution.flow_list is None or len(solution.flow_list) == 0:
         print(constants.NO_SOLUTION_COULD_BE_FOUND)
     else:
         if solution.cost.get_total_cost() == float('inf'):
@@ -152,8 +152,8 @@ elif path_finding_method == "yen":
         else:
             print(found_solution(solution))
 
-            write_path_to_file(bag, scenario_output_path, metaheuristic_solver.get_solution())
+            write_path_to_file(scenario_output_path, metaheuristic_solver.get_solution())
             write_worst_case_delay_to_file(scenario_output_path, solution.cost.get_worst_case_delay_dict(), create_result_output_path(bag))
             write_link_utilization_to_file(metaheuristic_solver.get_solution(), graph, scenario_output_path, create_result_output_path(bag))
             write_duration_to_file(metaheuristic_solver.get_duration_dict(), create_result_output_path(bag))
-            write_non_tt_message_candidate_path_list_to_file(scenario_output_path, metaheuristic_solver.get_non_tt_message_candidate_list())
+            write_srt_flow_candidate_path_list_to_file(scenario_output_path, metaheuristic_solver.get_srt_flow_candidate_list())

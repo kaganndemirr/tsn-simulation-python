@@ -7,9 +7,9 @@ from util import constants
 
 
 class TSNsched:
-    def __init__(self, graph, tt_message_list):
+    def __init__(self, graph, tt_flow_list):
         self.graph = graph
-        self.tt_message_list = tt_message_list
+        self.tt_flow_list = tt_flow_list
 
     def get_device_list(self):
         device_list = []
@@ -20,22 +20,22 @@ class TSNsched:
 
     def get_flow_list(self):
         flow_list = list()
-        for message in self.tt_message_list:
-            name = message.application.name
-            if len(message.application.target_list) > 1:
+        for flow in self.tt_flow_list:
+            name = flow.application.name
+            if len(flow.application.target_list) > 1:
                 type = constants.MULTICAST
             else:
                 type = constants.UNICAST
             priority_value = constants.TT_PCP
-            packet_size = message.application.message_size_byte
-            source_device = message.application.source.name
-            end_devices = [target.name for target in message.application.target_list]
-            packet_periodicity = message.application.cmi
-            hard_constraint_time = message.application.deadline
+            packet_size = flow.application.flow_size_byte
+            source_device = flow.application.source.name
+            end_devices = [target.name for target in flow.application.target_list]
+            packet_periodicity = flow.application.cmi
+            hard_constraint_time = flow.application.deadline
             fixed_priority = constants.TRUE
 
             hop_list = list()
-            for edge in message.path:
+            for edge in flow.path:
                 hop = Hop(edge.source.name, edge.target.name)
                 hop_list.append(hop)
 

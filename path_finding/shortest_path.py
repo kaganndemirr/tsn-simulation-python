@@ -1,6 +1,6 @@
-from application import NonTTApplication
+from application import SRTApplication
 
-from message.message import Message
+from flow import Flow
 
 from util import constants
 from util.helper_functions import convert_graph_to_nx_graph, create_path_as_node_list, create_path_as_edge_list, generate_multicast_path_for_shortest_path
@@ -9,11 +9,11 @@ from util.path_finding_functions import dijkstra_shortest_path
 
 class ShortestPath:
     def __init__(self, bag):
-        self.non_tt_message_list = list()
+        self.srt_flow_list = list()
 
         for application in bag.get_application_list():
-            if isinstance(application, NonTTApplication):
-                non_tt_message = Message(application)
+            if isinstance(application, SRTApplication):
+                srt_flow = Flow(application)
                 path_list = list()
                 for target in application.target_list:
                     g = convert_graph_to_nx_graph(bag.get_graph(), application.source, target)
@@ -26,9 +26,9 @@ class ShortestPath:
                     path_list.append(shortest_path)
 
                 path = generate_multicast_path_for_shortest_path(path_list)
-                non_tt_message.set_path(path)
+                srt_flow.set_path(path)
 
-                self.non_tt_message_list.append(non_tt_message)
+                self.srt_flow_list.append(srt_flow)
 
-    def get_non_tt_message_list(self):
-        return self.non_tt_message_list
+    def get_srt_flow_list(self):
+        return self.srt_flow_list

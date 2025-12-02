@@ -16,9 +16,9 @@ class ShortestPathSolver:
         shortest_path = ShortestPath(bag)
         shortest_path_timer_end = timer()
 
-        non_tt_message_list = shortest_path.get_non_tt_message_list()
+        srt_flow_list = shortest_path.get_srt_flow_list()
 
-        self.solution = non_tt_message_list + bag.get_tt_message_list()
+        self.solution = srt_flow_list + bag.get_tt_flow_list()
 
         cost = AVBLatencyMath.evaluate(self.solution)
 

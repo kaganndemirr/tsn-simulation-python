@@ -5,7 +5,7 @@ from util import constants
 from architecture.graph import Graph
 from architecture.node import Switch, EndSystem, Port
 
-def topology_parser(net_file, rate, non_tt_idle_slope):
+def topology_parser(net_file, rate, srt_idle_slope):
 
     graph = Graph()
 
@@ -39,7 +39,7 @@ def topology_parser(net_file, rate, non_tt_idle_slope):
         source = graph.get_node(source_element)
         target = graph.get_node(target_element)
 
-        graph.add_edge(source, target, rate, non_tt_idle_slope, weight)
+        graph.add_edge(source, target, rate, srt_idle_slope, weight)
 
         if source not in node_port_id_dict.keys():
             node_port_id_dict[source] = 0

@@ -39,8 +39,8 @@ class AVBLatencyMathCost:
 
         return w_1 * self.objective_1 + w_2 * self.objective_2 + w_3 * self.objective_3
 
-    def set_worst_case_delay_to_message(self, message, worst_case_delay):
-        self.worst_case_delay_dict[message] = worst_case_delay
+    def set_worst_case_delay_to_flow(self, flow, worst_case_delay):
+        self.worst_case_delay_dict[flow] = worst_case_delay
 
     def get_worst_case_delay_dict(self):
         return self.worst_case_delay_dict

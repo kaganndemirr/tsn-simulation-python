@@ -8,8 +8,8 @@ from architecture.node import EndSystem, Switch
 from util import constants
 
 
-def compute_mbps(message_size, cmi):
-    return (message_size * constants.ONE_BYTE) / cmi
+def compute_mbps(flow_size, cmi):
+    return (flow_size * constants.ONE_BYTE) / cmi
 
 def create_path_as_list(source, switch_list, target):
     explicit_path_raw = list()

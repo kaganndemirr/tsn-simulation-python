@@ -1,6 +1,6 @@
-from application import NonTTApplication
+from application import SRTApplication
 
-from message.message import MessageCandidate
+from flow import FlowCandidate
 
 from util import constants
 from util.helper_functions import convert_graph_to_nx_graph, create_path_as_node_list, create_path_as_edge_list, generate_multicast_path_for_k_shortest_path
@@ -9,11 +9,11 @@ from util.path_finding_functions import yen_k_shortest_paths
 
 class KShortestPath:
     def __init__(self, bag):
-        self.non_tt_message_candidate_list = list()
+        self.srt_flow_candidate_list = list()
 
         for application in bag.application_list:
-            if isinstance(application, NonTTApplication):
-                message_candidate = MessageCandidate(application)
+            if isinstance(application, SRTApplication):
+                flow_candidate = FlowCandidate(application)
                 candidate_path_list_for_all_targets = list()
                 for target in application.target_list:
                     candidate_path_list = list()
@@ -29,9 +29,9 @@ class KShortestPath:
 
                 candidate_path_list = generate_multicast_path_for_k_shortest_path(candidate_path_list_for_all_targets)
 
-                message_candidate.candidate_path_list = candidate_path_list
-                self.non_tt_message_candidate_list.append(message_candidate)
+                flow_candidate.candidate_path_list = candidate_path_list
+                self.srt_flow_candidate_list.append(flow_candidate)
 
 
-    def get_non_tt_message_candidate_list(self):
-        return self.non_tt_message_candidate_list
+    def get_srt_flow_candidate_list(self):
+        return self.srt_flow_candidate_list
