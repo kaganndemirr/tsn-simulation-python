@@ -3,9 +3,6 @@ class Node:
         self.name = name
         self.port_list = list()
 
-    def get_name(self):
-        return self.name
-
     def add_port(self, port):
         self.port_list.append(port)
 

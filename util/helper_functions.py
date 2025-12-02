@@ -34,14 +34,14 @@ def create_path_as_edge_list(path_as_list, graph):
 def convert_graph_to_nx_graph(graph, source, target):
     g = nx.DiGraph()
 
-    for edge in graph.get_edge_list():
-        if isinstance(edge.get_source(), Switch) and isinstance(edge.get_target(), Switch):
-            g.add_edge(edge.get_source().get_name(), edge.get_target().get_name())
-            g[edge.get_source().get_name()][edge.get_target().get_name()]['weight'] = edge.get_weight()
+    for edge in graph.edge_list:
+        if isinstance(edge.source, Switch) and isinstance(edge.target, Switch):
+            g.add_edge(edge.source.name, edge.target.name)
+            g[edge.source.name][edge.target.name]['weight'] = edge.weight
 
-        elif edge.get_source() == source or edge.get_target() == target:
-            g.add_edge(edge.get_source().get_name(), edge.get_target().get_name())
-            g[edge.get_source().get_name()][edge.get_target().get_name()]['weight'] = edge.get_weight()
+        elif edge.source == source or edge.target == target:
+            g.add_edge(edge.source.name, edge.target.name)
+            g[edge.source.name][edge.target.name]['weight'] = edge.weight
 
     return g
 
@@ -113,11 +113,11 @@ def create_result_output_path(bag):
     result_list = list()
 
     result_list.append("outputs")
-    result_list.append("PathFindingMethod=" + bag.get_path_finding_method())
-    if bag.get_algorithm() is not None:
-        result_list.append("Algorithm=" + bag.get_algorithm())
-    if bag.get_k() is not None:
-        result_list.append("K=" + str(bag.get_k()))
+    result_list.append("PathFindingMethod=" + bag.path_finding_method)
+    if bag.algorithm is not None:
+        result_list.append("Algorithm=" + bag.algorithm)
+    if bag.k is not None:
+        result_list.append("K=" + str(bag.k))
 
     result_output_path = Path(*result_list)
 
@@ -129,7 +129,7 @@ def create_result_output_path(bag):
 def create_scenario_output_path(bag):
     result_output_path = create_result_output_path(bag)
 
-    scenario_output_path = os.path.join(result_output_path, bag.get_topology_name() + "_" + bag.get_scenario_name())
+    scenario_output_path = os.path.join(result_output_path, bag.topology_name + "_" + bag.scenario_name)
 
     scenario_output_path = Path(scenario_output_path)
 

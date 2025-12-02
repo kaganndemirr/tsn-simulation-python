@@ -18,7 +18,7 @@ def move_output_json_to_outputs(tsnsched_output_path):
 
 
 def get_tsnsched_switch(node, output_json):
-    node_name = node.get_name()
+    node_name = node.name
     for tsnsched_switch in output_json["switches"]:
         if node_name == tsnsched_switch["name"]:
             return tsnsched_switch

@@ -10,9 +10,6 @@ from solver.solution import Solution
 from util import constants
 from util.ro_functions import construct_initial_solution, grasp
 
-logging.basicConfig(level=logging.INFO)
-
-logger = logging.getLogger()
 
 class MetaheuristicSolver:
     def __init__(self):
@@ -24,7 +21,7 @@ class MetaheuristicSolver:
     def run_meta_heuristic(self, bag, avb_latency_math, k_shortest_path_time):
         metaheuristic_start_time = time.time()
 
-        initial_solution = construct_initial_solution(self.non_tt_message_candidate_list, bag.get_tt_message_list(),avb_latency_math)
+        initial_solution = construct_initial_solution(self.non_tt_message_candidate_list, bag.tt_message_list, avb_latency_math)
         solution = grasp(initial_solution, avb_latency_math, self.non_tt_message_candidate_list, self.best_cost)
 
         cost = avb_latency_math.evaluate(solution)
@@ -48,7 +45,7 @@ class MetaheuristicSolver:
 
         avb_latency_math = AVBLatencyMath()
 
-        for iteration in range(1, bag.get_max_iteration_number() + 1):
+        for iteration in range(1, bag.max_iteration_number + 1):
             self.run_meta_heuristic(bag, avb_latency_math, k_shortest_path_time)
 
             if iteration % constants.ITERATION_LOG == 0:

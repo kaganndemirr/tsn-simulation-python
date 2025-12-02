@@ -21,22 +21,22 @@ class TSNsched:
     def get_flow_list(self):
         flow_list = list()
         for message in self.tt_message_list:
-            name = message.get_application().get_name()
-            if len(message.get_application().get_target_list()) > 1:
+            name = message.application.name
+            if len(message.application.target_list) > 1:
                 type = constants.MULTICAST
             else:
                 type = constants.UNICAST
             priority_value = constants.TT_PCP
-            packet_size = message.get_application().get_message_size_byte()
-            source_device = message.get_application().get_source().get_name()
-            end_devices = [target.get_name() for target in message.get_application().get_target_list()]
-            packet_periodicity = message.get_application().get_cmi()
-            hard_constraint_time = message.get_application().get_deadline()
+            packet_size = message.application.message_size_byte
+            source_device = message.application.source.name
+            end_devices = [target.name for target in message.application.target_list]
+            packet_periodicity = message.application.cmi
+            hard_constraint_time = message.application.deadline
             fixed_priority = constants.TRUE
 
             hop_list = list()
-            for edge in message.get_path():
-                hop = Hop(edge.get_source().get_name(), edge.get_target().get_name())
+            for edge in message.path:
+                hop = Hop(edge.source.name, edge.target.name)
                 hop_list.append(hop)
 
             flow = Flow(name, type, priority_value, packet_size, source_device, end_devices, packet_periodicity, hard_constraint_time, fixed_priority, hop_list)
@@ -47,13 +47,13 @@ class TSNsched:
     def get_switch_list(self):
         switch_list = list()
         for switch in self.graph.get_switch_list():
-            switch_name = switch.get_name()
-            port_list = switch.get_port_list()
+            switch_name = switch.name
+            port_list = switch.port_list
             ports = list()
             for port in port_list:
-                port_name = port.get_name()
-                connects_to = port.get_connects_to()
-                port_speed = self.graph.get_edge(switch, self.graph.get_node(connects_to)).get_rate()
+                port_name = port.name
+                connects_to = port.connects_to
+                port_speed = self.graph.get_edge(switch, self.graph.get_node(connects_to)).rate
                 schedule_type = constants.MICRO_CYCLE
                 port = Port(port_name, connects_to, port_speed, schedule_type)
                 ports.append(port)

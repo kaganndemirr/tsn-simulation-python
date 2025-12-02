@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as Et
 
-from application.application import NonTTApplication, TTApplication
+from application import NonTTApplication, TTApplication
 
 from util.helper_functions import compute_mbps, create_path_as_list, create_path_as_edge_list
 

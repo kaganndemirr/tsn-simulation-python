@@ -1,4 +1,4 @@
-from application.application import NonTTApplication
+from application import NonTTApplication
 
 from message.message import Message
 
@@ -15,11 +15,11 @@ class ShortestPath:
             if isinstance(application, NonTTApplication):
                 non_tt_message = Message(application)
                 path_list = list()
-                for target in application.get_target_list():
-                    g = convert_graph_to_nx_graph(bag.get_graph(), application.get_source(), target)
+                for target in application.target_list:
+                    g = convert_graph_to_nx_graph(bag.get_graph(), application.source, target)
                     shortest_path_as_string_list = list()
                     if bag.get_algorithm() == constants.DIJKSTRA:
-                        shortest_path_as_string_list = dijkstra_shortest_path(g, application.get_source().get_name(), target.get_name(), weight='weight')
+                        shortest_path_as_string_list = dijkstra_shortest_path(g, application.source.name, target.name, weight='weight')
 
                     shortest_path_as_node_list = create_path_as_node_list(shortest_path_as_string_list[0], shortest_path_as_string_list[1:-1],shortest_path_as_string_list[-1])
                     shortest_path = create_path_as_edge_list(shortest_path_as_node_list, bag.get_graph())

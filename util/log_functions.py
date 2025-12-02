@@ -2,20 +2,20 @@ import os
 
 
 def create_info(bag):
-    result = "Path Finding Method: " + bag.get_path_finding_method()
-    if bag.get_algorithm() is not None:
-        result += ", Algorithm: " + bag.get_algorithm()
-    if bag.get_k() is not None:
-        result += ", K: " + str(bag.get_k())
-    if bag.get_max_iteration_number() is not None:
-        result += ", Max Iteration Number: " + str(bag.get_max_iteration_number())
+    result = "Path Finding Method: " + bag.path_finding_method
+    if bag.algorithm is not None:
+        result += ", Algorithm: " + bag.algorithm
+    if bag.k is not None:
+        result += ", K: " + str(bag.k)
+    if bag.max_iteration_number is not None:
+        result += ", Max Iteration Number: " + str(bag.max_iteration_number)
     return result
 
 def found_solution(solution):
-    return f"Found solution: {solution.get_cost().get_detailed_string()}"
+    return f"Found solution: {solution.cost.get_detailed_string()}"
 
 def found_no_solution(solution):
-    return f"Found no solution: {solution.get_cost().get_detailed_string()}"
+    return f"Found no solution: {solution.cost().get_detailed_string()}"
 
 def create_path_info(scenario_output_path):
     return f"Paths written to {os.path.join(scenario_output_path, "paths.txt")} file."

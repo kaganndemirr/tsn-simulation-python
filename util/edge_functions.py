@@ -1,5 +1,5 @@
 def get_slack(gcl):
-    return gcl.get_start() + gcl.get_cycle_duration() - gcl.get_end()
+    return gcl.start + gcl.cycle_duration - gcl.end
 
 def compute_max_interference(duration, gcl):
     interference_max = 0

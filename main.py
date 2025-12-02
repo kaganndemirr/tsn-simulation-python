@@ -27,44 +27,49 @@ from solver.metaheuristic_solver import MetaheuristicSolver
 parser = argparse.ArgumentParser(prog='tsn_simulation')
 parser.add_argument('-topology', help="Use given file as topology")
 parser.add_argument('-scenario', help="Use given file as scenario")
-parser.add_argument('-cmi', help="CMI value for SRT Applications", default=constants.DEFAULT_CMI)
+parser.add_argument('-rate', help="Edge rate (Default: 1000 mbps)", default=constants.DEFAULT_RATE, type=int)
+parser.add_argument('-non_tt_idle_slope', help="Non TT Queue Idle Slope (Default: 0.75)", default=constants.DEFAULT_NON_TT_IDLE_SLOPE, type=float)
+parser.add_argument('-cmi', help="CMI value for SRT Applications (Default: 125)", default=constants.DEFAULT_CMI, type=float)
 
-parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", default=constants.DEFAULT_K)
-parser.add_argument('-max_iteration_number', help="Max Iteration Number (Default: 1000)", default=constants.DEFAULT_MAX_ITERATION_NUMBER)
-
+parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", default=constants.DEFAULT_K, type=int)
 parser.add_argument('-path_finding_method', help="Choose path finder method (Default = yen) (Choices: shortestPath, yen)", default=constants.YEN)
+
+parser.add_argument('-max_iteration_number', help="Max Iteration Number (Default: 1000)", default=constants.DEFAULT_MAX_ITERATION_NUMBER, type=int)
 
 args = parser.parse_args()
 
 topology_file = args.topology
 scenario_file = args.scenario
 
-avb_latency_math = AVBLatencyMath()
+rate = args.rate
+non_tt_idle_slope = args.non_tt_idle_slope
 cmi = args.cmi
 k = args.k
-max_iteration_number = args.max_iteration_number
 path_finding_method = args.path_finding_method
+max_iteration_number = args.max_iteration_number
+
+avb_latency_math = AVBLatencyMath()
 
 bag = Bag()
 
 print(f"Parsing topology from {os.path.basename(topology_file)}!")
-graph = topology_parser(topology_file)
-bag.set_graph(graph)
+graph = topology_parser(topology_file, rate, non_tt_idle_slope)
+bag.graph = graph
 print(f"Topology successfully parsed {os.path.basename(topology_file)}!")
 
 print(f"Parsing application from {os.path.basename(scenario_file)}!")
 application_list = application_parser(scenario_file, graph, cmi)
-bag.set_application_list(application_list)
+bag.application_list = application_list
 print(f"Application successfully parsed {os.path.basename(scenario_file)}!")
 
 print(f"Finding shortest paths for TT Applications!")
 tt_message_list = find_shortest_path_for_tt_applications(graph, application_list)
-bag.set_tt_message_list(tt_message_list)
+bag.tt_message_list = tt_message_list
 print(f"Finding shortest paths successfully for TT Applications!")
 
 topology_name, scenario_name = get_topology_and_scenario_name(topology_file, scenario_file)
-bag.set_topology_name(topology_name)
-bag.set_scenario_name(scenario_name)
+bag.topology_name = topology_name
+bag.scenario_name = scenario_name
 
 if path_finding_method == "shortest_path":
     shortest_path_solver = ShortestPathSolver()
@@ -111,9 +116,9 @@ if path_finding_method == "shortest_path":
 elif path_finding_method == "yen":
     metaheuristic_solver = MetaheuristicSolver()
 
-    bag.set_path_finding_method(path_finding_method)
-    bag.set_k(k)
-    bag.set_max_iteration_number(max_iteration_number)
+    bag.path_finding_method = path_finding_method
+    bag.k = k
+    bag.max_iteration_number = max_iteration_number
 
     print(f"Creating input.json for TSNsched!")
     tsnsched = TSNsched(graph, tt_message_list)
@@ -137,18 +142,18 @@ elif path_finding_method == "yen":
 
     solution = metaheuristic_solver.solve(bag)
 
-    solution.get_cost().write_result_to_file(bag)
+    solution.cost.write_result_to_file(bag)
 
-    if solution.get_message_list() is None or len(solution.get_message_list()) == 0:
+    if solution.message_list is None or len(solution.message_list) == 0:
         print(constants.NO_SOLUTION_COULD_BE_FOUND)
     else:
-        if solution.get_cost().get_total_cost() == float('inf'):
+        if solution.cost.get_total_cost() == float('inf'):
             print(found_no_solution(solution))
         else:
             print(found_solution(solution))
 
             write_path_to_file(bag, scenario_output_path, metaheuristic_solver.get_solution())
-            write_worst_case_delay_to_file(bag, scenario_output_path, solution.get_cost().get_worst_case_delay_dict(), create_result_output_path(bag))
-            write_link_utilization_to_file(bag, metaheuristic_solver.get_solution(), graph, scenario_output_path, create_result_output_path(bag))
-            write_duration_to_file(bag, metaheuristic_solver.get_duration_dict(), create_result_output_path(bag))
-            write_non_tt_message_candidate_path_list_to_file(bag, scenario_output_path, metaheuristic_solver.get_non_tt_message_candidate_list())
+            write_worst_case_delay_to_file(scenario_output_path, solution.cost.get_worst_case_delay_dict(), create_result_output_path(bag))
+            write_link_utilization_to_file(metaheuristic_solver.get_solution(), graph, scenario_output_path, create_result_output_path(bag))
+            write_duration_to_file(metaheuristic_solver.get_duration_dict(), create_result_output_path(bag))
+            write_non_tt_message_candidate_path_list_to_file(scenario_output_path, metaheuristic_solver.get_non_tt_message_candidate_list())

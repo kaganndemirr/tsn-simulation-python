@@ -60,5 +60,5 @@ class AVBLatencyMathCost:
     def write_result_to_file(self, bag):
         result_output_path = create_result_output_path(bag)
         with open(os.path.join(result_output_path, "results.txt"), "a") as result_writer:
-            result_writer.write(f"{bag.get_topology_name()}_{bag.get_scenario_name()}\n")
+            result_writer.write(f"{bag.topology_name}_{bag.scenario_name}\n")
             result_writer.write(f"cost = {self.get_total_cost()}, o1 = {self.objective_1}, o2 = {self.objective_2}, o3 = {self.objective_3}\n")

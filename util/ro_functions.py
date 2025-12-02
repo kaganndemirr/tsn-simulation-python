@@ -1,6 +1,6 @@
 import random
 
-from application.application import TTApplication, NonTTApplication
+from application import TTApplication, NonTTApplication
 
 from avb_latency_math.avb_latency_math_cost import AVBLatencyMathCost
 
@@ -19,9 +19,9 @@ def construct_initial_solution(non_tt_message_candidate_list, tt_message_list, a
         current_best_cost = AVBLatencyMathCost()
         current_best_message = None
 
-        for candidate_path in message_candidate.get_candidate_path_list():
-            current_message = Message(message_candidate.get_application())
-            current_message.set_path(candidate_path)
+        for candidate_path in message_candidate.candidate_path_list:
+            current_message = Message(message_candidate.application)
+            current_message.path = candidate_path
             initial_solution.append(current_message)
             cost = avb_latency_math.evaluate(initial_solution)
             if cost.get_total_cost() < current_best_cost.get_total_cost():
@@ -48,18 +48,18 @@ def grasp(initial_solution, avb_latency_math, non_tt_message_candidate_list, glo
 
         old_message = solution[index]
 
-        if isinstance(old_message.get_application(), NonTTApplication):
+        if isinstance(old_message.application, NonTTApplication):
 
             old_message_candidate = None
             for message_candidate_key, message_candidate_value in mapping.items():
-                if old_message.get_application() == message_candidate_key.get_application():
+                if old_message.application == message_candidate_key.application:
                     old_message_candidate = message_candidate_value
                     break
 
             if isinstance(old_message_candidate, MessageCandidate):
-                for candidate_path in old_message_candidate.get_candidate_path_list():
-                    temp_message = Message(old_message_candidate.get_application())
-                    temp_message.set_path(candidate_path)
+                for candidate_path in old_message_candidate.candidate_path_list:
+                    temp_message = Message(old_message_candidate.application)
+                    temp_message.path = candidate_path
                     solution[index] = temp_message
                     cost = avb_latency_math.evaluate(solution)
 
@@ -83,21 +83,19 @@ def find_shortest_path_for_tt_applications(graph, application_list):
 
             path_list = list()
 
-            if len(application.get_explicit_path_list()) != 0:
-                for path in application.get_explicit_path_list():
+            if len(application.explicit_path_list) != 0:
+                for path in application.explicit_path_list:
                     path_list.append(path)
 
             else:
-                for target in application.get_target_list():
-                    g = convert_graph_to_nx_graph(graph, application.get_source(), target)
-                    shortest_path_as_string_list = dijkstra_shortest_path(g, application.get_source().get_name(), target.get_name(), weight='weight')
+                for target in application.target_list:
+                    g = convert_graph_to_nx_graph(graph, application.source, target)
+                    shortest_path_as_string_list = dijkstra_shortest_path(g, application.source.name, target.name, weight='weight')
                     shortest_path_as_node_list = create_path_as_node_list(shortest_path_as_string_list[0], shortest_path_as_string_list[1:-1], shortest_path_as_string_list[-1])
                     shortest_path = create_path_as_edge_list(shortest_path_as_node_list, graph)
                     path_list.append(shortest_path)
 
-            path = generate_multicast_path_for_shortest_path(path_list)
-
-            tt_message.set_path(path)
+            tt_message.path = generate_multicast_path_for_shortest_path(path_list)
 
             tt_message_list.append(tt_message)
 
