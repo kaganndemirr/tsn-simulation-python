@@ -32,9 +32,3 @@ class Port:
     def __init__(self, name, connects_to):
         self.name = name
         self.connects_to = connects_to
-
-    def get_name(self):
-        return self.name
-
-    def get_connects_to(self):
-        return self.connects_to

@@ -36,8 +36,8 @@ def get_port_list_have_gcl(tsnsched_switch):
 def get_edge(graph, switch, port_name):
     target = None
     for port in switch.get_port_list():
-        if port_name == port.get_name():
-            target_name = port.get_connects_to()
+        if port_name == port.name:
+            target_name = port.connects_to
             target = graph.get_node(target_name)
 
     edge = graph.get_edge(switch, target)

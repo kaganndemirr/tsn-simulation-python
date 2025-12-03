@@ -28,7 +28,7 @@ parser = argparse.ArgumentParser(prog='tsn_simulation')
 parser.add_argument('-topology', help="Use given file as topology")
 parser.add_argument('-scenario', help="Use given file as scenario")
 parser.add_argument('-rate', help="Edge rate (Default: 1000 mbps)", default=constants.DEFAULT_RATE, type=int)
-parser.add_argument('-srt_idle_slope', help="SRT Queue Idle Slope (Default: 0.75)", default=constants.DEFAULT_NON_TT_IDLE_SLOPE, type=float)
+parser.add_argument('-srt_idle_slope', help="SRT Queue Idle Slope (Default: 0.75)", default=constants.DEFAULT_SRT_IDLE_SLOPE, type=float)
 parser.add_argument('-cmi', help="CMI value for SRT Applications (Default: 125)", default=constants.DEFAULT_CMI, type=float)
 
 parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", default=constants.DEFAULT_K, type=int)
