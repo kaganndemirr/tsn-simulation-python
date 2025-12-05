@@ -1,7 +1,7 @@
-from tsnsched.device import Device
-from tsnsched.flow import Flow, Hop
-from tsnsched.switch import Switch as TSNschedSwitch
-from tsnsched.switch import Port
+from scheduler.device import Device
+from scheduler.flow import Flow, Hop
+from scheduler.switch import Switch as TSNschedSwitch
+from scheduler.switch import Port
 
 from util import constants
 

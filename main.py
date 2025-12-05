@@ -9,10 +9,10 @@ from parser.topology_parser import topology_parser
 
 from worst_case_delay_analysis.avb_latency_math import AVBLatencyMath
 
-from tsnsched.tsnsched import TSNsched
-from tsnsched.input_json import TSNschedInputJson
-from tsnsched.run_tsnsched import run_tsnsched
-from tsnsched.output_json import parse_output_json
+from scheduler.tsnsched import TSNsched
+from scheduler.input_json import TSNschedInputJson
+from scheduler.run_tsnsched import run_tsnsched
+from scheduler.output_json import parse_output_json
 
 from util.bag import Bag
 from util.helper_functions import get_topology_and_scenario_name, create_scenario_output_path, create_tsnsched_output_path, create_result_output_path
