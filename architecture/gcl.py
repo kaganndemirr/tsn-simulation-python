@@ -7,9 +7,6 @@ class GCL:
     def get_duration(self):
         return self.end - self.start
 
-    def get_cycle_duration(self):
-        return self.cycle_duration
-
     def __repr__(self):
         return f"{self.start} - {self.end}, {self.cycle_duration}"
 

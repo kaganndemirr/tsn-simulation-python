@@ -6,9 +6,6 @@ class Node:
     def add_port(self, port):
         self.port_list.append(port)
 
-    def get_port_list(self):
-        return self.port_list
-
     def __repr__(self):
         return f"{self.name}"
 

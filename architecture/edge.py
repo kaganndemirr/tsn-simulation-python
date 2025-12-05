@@ -7,9 +7,6 @@ class Edge:
         self.weight = weight
         self.gcl = None
 
-    def add_gcl(self, gcl):
-        self.gcl = gcl
-
     def __repr__(self):
         return f"({self.source} : {self.target})"
 

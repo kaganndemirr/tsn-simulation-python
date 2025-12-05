@@ -1,5 +1,4 @@
 import argparse
-import logging
 import os
 import json
 
@@ -8,7 +7,7 @@ from util import constants
 from parser.application_parser import application_parser
 from parser.topology_parser import topology_parser
 
-from avb_latency_math.avb_latency_math import AVBLatencyMath
+from worst_case_delay_analysis.avb_latency_math import AVBLatencyMath
 
 from tsnsched.tsnsched import TSNsched
 from tsnsched.input_json import TSNschedInputJson
@@ -32,7 +31,7 @@ parser.add_argument('-srt_idle_slope', help="SRT Queue Idle Slope (Default: 0.75
 parser.add_argument('-cmi', help="CMI value for SRT Applications (Default: 125)", default=constants.DEFAULT_CMI, type=float)
 
 parser.add_argument('-k', help="Value of K for search-space reduction (Default: 50)", default=constants.DEFAULT_K, type=int)
-parser.add_argument('-path_finding_method', help="Choose path finder method (Default = yen) (Choices: shortestPath, yen)", default=constants.YEN)
+parser.add_argument('-path_finding_method', help="Choose path finder method (Default = yen) (Choices: shortestPath, yen)", default=constants.SHORTEST_PATH)
 
 parser.add_argument('-max_iteration_number', help="Max Iteration Number (Default: 1000)", default=constants.DEFAULT_MAX_ITERATION_NUMBER, type=int)
 
@@ -98,12 +97,12 @@ if path_finding_method == "shortest_path":
 
     solution = shortest_path_solver.solve(bag)
 
-    solution.get_cost().write_result_to_file(bag)
+    solution.cost.write_result_to_file(bag)
 
-    if solution.get_flow_list() is None or len(solution.get_flow_list()) == 0:
+    if solution.flow_list is None or len(solution.flow_list) == 0:
         print(constants.NO_SOLUTION_COULD_BE_FOUND)
     else:
-        if solution.get_cost().get_total_cost() == float('inf'):
+        if solution.cost.get_total_cost() == float('inf'):
             print(found_no_solution(solution))
         else:
             print(found_solution(solution))

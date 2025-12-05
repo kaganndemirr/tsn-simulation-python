@@ -20,7 +20,7 @@ END_SYSTEM = "endsystem"
 
 UNDIRECTED = "undirected"
 
-DIJKSTRA = "dijkstra"
+SHORTEST_PATH = "shortest_path"
 YEN = "yen"
 
 UNICAST = "unicast"

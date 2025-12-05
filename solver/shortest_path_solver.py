@@ -2,7 +2,7 @@ from timeit import default_timer as timer
 
 from path_finding.shortest_path import ShortestPath
 
-from avb_latency_math.avb_latency_math import AVBLatencyMath
+from worst_case_delay_analysis.avb_latency_math import AVBLatencyMath
 
 from solver.solution import Solution
 
@@ -16,9 +16,9 @@ class ShortestPathSolver:
         shortest_path = ShortestPath(bag)
         shortest_path_timer_end = timer()
 
-        srt_flow_list = shortest_path.get_srt_flow_list()
+        srt_flow_list = shortest_path.srt_flow_list
 
-        self.solution = srt_flow_list + bag.get_tt_flow_list()
+        self.solution = srt_flow_list + bag.tt_flow_list
 
         cost = AVBLatencyMath.evaluate(self.solution)
 

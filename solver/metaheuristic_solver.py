@@ -1,8 +1,8 @@
 import logging
 import time
 
-from avb_latency_math.avb_latency_math import AVBLatencyMath
-from avb_latency_math.avb_latency_math_cost import AVBLatencyMathCost
+from worst_case_delay_analysis.avb_latency_math import AVBLatencyMath
+from worst_case_delay_analysis.avb_latency_math_cost import AVBLatencyMathCost
 
 from path_finding.k_shortest_path import KShortestPath
 from solver.solution import Solution

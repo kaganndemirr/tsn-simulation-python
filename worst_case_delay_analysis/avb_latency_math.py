@@ -1,6 +1,6 @@
 from application import SRTApplication, TTApplication
 
-from avb_latency_math.avb_latency_math_cost import Objective, AVBLatencyMathCost
+from worst_case_delay_analysis.avb_latency_math_cost import Objective, AVBLatencyMathCost
 
 from util import constants
 from util.edge_functions import compute_worst_case_interference

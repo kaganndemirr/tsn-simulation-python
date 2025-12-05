@@ -2,7 +2,7 @@ import random
 
 from application import TTApplication, SRTApplication
 
-from avb_latency_math.avb_latency_math_cost import AVBLatencyMathCost
+from worst_case_delay_analysis.avb_latency_math_cost import AVBLatencyMathCost
 
 from flow import Flow, FlowCandidate
 

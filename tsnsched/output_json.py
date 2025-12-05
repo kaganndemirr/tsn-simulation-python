@@ -35,7 +35,7 @@ def get_port_list_have_gcl(tsnsched_switch):
 
 def get_edge(graph, switch, port_name):
     target = None
-    for port in switch.get_port_list():
+    for port in switch.port_list:
         if port_name == port.name:
             target_name = port.connects_to
             target = graph.get_node(target_name)
@@ -58,4 +58,4 @@ def parse_output_json(tsnsched_output_path, graph):
                 for slot_data in priority_slot["slotsData"]:
                     gcl = GCL(first_cycle_start + slot_data["slotStart"], first_cycle_start + slot_data["slotStart"] + slot_data["slotDuration"], cycle_duration)
                     edge = get_edge(graph, switch, port_name)
-                    edge.add_gcl(gcl)
+                    edge.gcl = gcl
